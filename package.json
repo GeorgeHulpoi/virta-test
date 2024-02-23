@@ -20,7 +20,7 @@
 		"test:e2e": "jest --config ./apps/virta-test/test/jest-e2e.json",
 		"build:company": "pnpm run clean:company && nest build company-microservice && copyfiles -u 1 ./proto/* ./dist/apps/company-microservice/proto && copyfiles -f ./apps/company-microservice/package.json ./dist/apps/company-microservice && copyfiles -f ./apps/company-microservice/Dockerfile ./dist/apps/company-microservice && copyfiles -f ./apps/company-microservice/.dockerignore ./dist/apps/company-microservice",
 		"clean:company": "rimraf dist/apps/company-microservice",
-		"test:company:int": "jest --config ./apps/company-microservice/test/jest-int.json --detectOpenHandles --forceExit"
+		"test:company:int": "jest --config ./apps/company-microservice/test/jest-int.json --forceExit"
 	},
 	"dependencies": {
 		"@grpc/grpc-js": "^1.10.1",

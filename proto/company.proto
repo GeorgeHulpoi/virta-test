@@ -3,7 +3,18 @@ syntax = "proto3";
 package company;
 
 service CompanyService {
-	rpc EmptyRpc (Empty) returns (Empty) {};
+	rpc Create (CreateCompany) returns (Company) {}
+}
+
+message Company {
+	string id = 1;
+	optional string parent = 2;
+	string name = 3;
+}
+
+message CreateCompany {
+	string name = 1;
+	optional string parent = 2;
 }
 
 message Empty {}
