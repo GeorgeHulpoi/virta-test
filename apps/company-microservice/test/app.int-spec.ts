@@ -1,4 +1,4 @@
-import {INestApplication} from '@nestjs/common';
+import {INestApplication, ValidationPipe} from '@nestjs/common';
 import {ClientGrpc, ClientsModule} from '@nestjs/microservices';
 import {MongooseModule, getModelToken} from '@nestjs/mongoose';
 import {Test, TestingModule} from '@nestjs/testing';
@@ -9,6 +9,7 @@ import {CompanyModule} from '../src/company/company.module';
 import {Company} from '../src/company/company.schema';
 import type {CompanyService} from '../src/company/company.service';
 import {grpcClientOptions} from '../src/options/grpc-client.options';
+import {validationOptions} from '../src/options/validation.options';
 
 describe('Company Microservice (integration)', () => {
 	let mongod: MongoMemoryServer;
@@ -35,6 +36,7 @@ describe('Company Microservice (integration)', () => {
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
+		app.useGlobalPipes(new ValidationPipe(validationOptions));
 		app.connectMicroservice(grpcClientOptions, {
 			inheritAppConfig: true, // enable global pipes for hybrid app
 		});
