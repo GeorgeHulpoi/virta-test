@@ -16,13 +16,13 @@ export function CompanyExist(
 			target: object.constructor,
 			propertyName,
 			options: validationOptions,
-			validator: IsEmailAlreadyInUseConstraint,
+			validator: CompanyExistConstraint,
 		});
 	};
 }
 
 @ValidatorConstraint({async: true})
-export class IsEmailAlreadyInUseConstraint
+export class CompanyExistConstraint
 	implements ValidatorConstraintInterface
 {
 	constructor(private readonly companyService: CompanyService) {}
