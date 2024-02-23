@@ -69,6 +69,46 @@ describe('Company Microservice (integration)', () => {
 		expect(companyService).toBeDefined();
 	});
 
+	describe('Find By Id', () => {
+		let company: CompanyResponse;
+
+		beforeEach(async () => {
+			company = await firstValueFrom(
+				companyService.create({
+					name: 'Apple',
+				}),
+			);
+		});
+
+		it('should find', async () => {
+			const result = await firstValueFrom(
+				companyService.findById({id: company.id}),
+			);
+
+			expect(result).toBeDefined();
+			expect(result).toEqual({
+				id: company.id,
+				name: 'Apple',
+			});
+		});
+
+		it('should throw RpcNotFoundException when not exist', (done) => {
+			companyService
+				.findById({
+					id: '65d6579d8ac2b03dafa32f73',
+				})
+				.subscribe({
+					next: () => {
+						done('should throw RpcNotFoundException');
+					},
+					error: (err) => {
+						shouldBeRpcNotFoundException(err);
+						done();
+					},
+				});
+		});
+	});
+
 	describe('Create', () => {
 		describe('should throw RpcBadRequestException', () => {
 			const createWrapper = (done, payload: any) => {

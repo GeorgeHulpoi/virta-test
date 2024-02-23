@@ -1,6 +1,7 @@
 import type {Observable} from 'rxjs';
 
 export interface CompanyService {
+	findById(payload: FindCompanyById): Observable<Company>;
 	create(payload: CreateCompany): Observable<Company>;
 	update(payload: UpdateCompany): Observable<Company>;
 	delete(payload: FindCompanyById): Observable<object>;

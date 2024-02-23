@@ -3,6 +3,7 @@ syntax = "proto3";
 package company;
 
 service CompanyService {
+	rpc FindById (FindCompanyById) returns (Company) {}
 	rpc Create (CreateCompany) returns (Company) {}
 	rpc Update (UpdateCompany) returns (Company) {}
 	rpc Delete (FindCompanyById) returns (Empty) {}

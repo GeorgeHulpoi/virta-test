@@ -14,6 +14,11 @@ import {ExceptionFilter} from '../../../../src/shared/filters/rpc-exception.filt
 export class CompanyController {
 	constructor(private readonly companyService: CompanyService) {}
 
+	@GrpcMethod('CompanyService', 'FindById')
+	findByid(findCompanyByIdDTO: FindCompanyByIdDTO): Observable<CompanyPOJO> {
+		return this.companyService.findById(findCompanyByIdDTO);
+	}
+
 	@GrpcMethod('CompanyService', 'Create')
 	create(createCompanyDto: CreateCompanyDTO): Observable<CompanyPOJO> {
 		return this.companyService.create(createCompanyDto);

@@ -24,6 +24,21 @@ export class CompanyService {
 		return this.model;
 	}
 
+	findById(findCompanyByIdDTO: FindCompanyByIdDTO): Observable<CompanyPOJO> {
+		const {id} = findCompanyByIdDTO;
+		return from(
+			this.model
+				.findById(id)
+				.lean({virtuals: true})
+				.exec()
+				.catch(this.catchError.bind(this))
+				.then((doc) => {
+					if (!doc) throw new RpcNotFoundException();
+					return doc;
+				}),
+		);
+	}
+
 	create(createCompanyDto: CreateCompanyDTO): Observable<CompanyPOJO> {
 		const company = new this.model(createCompanyDto);
 		return from(company.save().catch(this.catchError.bind(this)));

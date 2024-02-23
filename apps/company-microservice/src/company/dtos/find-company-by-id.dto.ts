@@ -1,7 +1,7 @@
-import { IsDefined, IsMongoId } from 'class-validator';
+import {IsDefined, IsMongoId} from 'class-validator';
 
 export class FindCompanyByIdDTO {
-	@IsDefined()
 	@IsMongoId()
+	@IsDefined()
 	id: string;
 }
