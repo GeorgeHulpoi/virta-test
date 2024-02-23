@@ -184,6 +184,157 @@ describe('Company Microservice (integration)', () => {
 			});
 		});
 	});
+
+	describe('Update', () => {
+		describe('should throw RpcBadRequestException', () => {
+			let company: CompanyPOJO;
+
+			const updateWrapper = (done, payload: any) => {
+				companyService
+					.update(payload)
+					.pipe(take(1))
+					.subscribe({
+						next: () => {
+							done('should throw RpcBadRequestException');
+						},
+						error: (err) => {
+							shouldBeRpcBadRequestException(err);
+							done();
+						},
+					});
+			};
+
+			beforeEach(async () => {
+				company = await firstValueFrom(
+					companyService.create({
+						name: 'Apple',
+					}),
+				);
+			});
+
+			it('when empty', (done) => {
+				updateWrapper(done, {});
+			});
+
+			it('when only id is provided', (done) => {
+				updateWrapper(done, {id: company.id});
+			});
+
+			it('when name is empy string', (done) => {
+				updateWrapper(done, {id: company.id, name: ''});
+			});
+
+			it('when name length is bigger than 128', (done) => {
+				updateWrapper(done, {
+					id: company.id,
+					name: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+				});
+			});
+
+			it('when parent is not a valid object id', (done) => {
+				updateWrapper(done, {
+					id: company.id,
+					name: 'Test',
+					parent: 1,
+				});
+			});
+
+			it("when parent doesn't exist", (done) => {
+				updateWrapper(done, {
+					id: company.id,
+					name: 'Test',
+					parent: '65d88c21e9d9594fba4b9a04',
+				});
+			});
+		});
+
+		describe('should update name', () => {
+			let company: CompanyPOJO;
+			let updatedCompany: CompanyPOJO;
+
+			beforeEach(async () => {
+				company = await firstValueFrom(
+					companyService.create({
+						name: 'Apple',
+					}),
+				);
+
+				updatedCompany = await firstValueFrom(
+					companyService.update({
+						id: company.id,
+						name: 'Microsoft',
+					}),
+				);
+			});
+
+			it('and return the updated document', async () => {
+				expect(updatedCompany).toBeDefined();
+				expect(updatedCompany).toEqual({
+					id: company.id,
+					name: 'Microsoft',
+				});
+			});
+
+			it('and reflect in database', async () => {
+				const doc = await model.findById(company.id).lean().exec();
+				expect(doc).toBeDefined();
+				expect(doc).toEqual(
+					expect.objectContaining({
+						name: 'Microsoft',
+					}),
+				);
+			});
+		});
+
+		describe('should update parent', () => {
+			let parentCompany: CompanyPOJO;
+			let company: CompanyPOJO;
+			let updatedCompany: CompanyPOJO;
+
+			beforeEach(async () => {
+				parentCompany = await firstValueFrom(
+					companyService.create({
+						name: 'Microsoft',
+					}),
+				);
+
+				company = await firstValueFrom(
+					companyService.create({
+						name: 'Skype',
+					}),
+				);
+
+				updatedCompany = await firstValueFrom(
+					companyService.update({
+						id: company.id,
+						parent: parentCompany.id,
+					}),
+				);
+			});
+
+			it('and return the updated document', async () => {
+				expect(updatedCompany).toBeDefined();
+				expect(updatedCompany).toEqual({
+					id: company.id,
+					name: 'Skype',
+					parent: parentCompany.id,
+				});
+			});
+
+			it('and reflect in database', async () => {
+				const doc = await model.findById(company.id).lean().exec();
+				expect(doc).toBeDefined();
+				expect(doc).toEqual(
+					expect.objectContaining({
+						name: 'Skype',
+						parent: Types.ObjectId.createFromHexString(
+							parentCompany.id,
+						),
+					}),
+				);
+			});
+		});
+	});
 });
 
 function shouldBeRpcBadRequestException(err) {
