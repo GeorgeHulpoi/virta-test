@@ -7,7 +7,7 @@ import {CompanyService} from './company.service';
 import {CreateCompanyDTO} from './dtos/create-company.dto';
 import {FindCompanyByIdDTO} from './dtos/find-company-by-id.dto';
 import {UpdateCompanyByIdDTO} from './dtos/update-company.dto';
-import {ExceptionFilter} from '../../../../shared/filters/rpc-exception.filter';
+import {ExceptionFilter} from '../../../../src/shared/filters/rpc-exception.filter';
 
 @UseFilters(ExceptionFilter)
 @Controller()

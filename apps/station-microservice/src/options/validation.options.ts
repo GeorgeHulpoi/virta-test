@@ -1,6 +1,6 @@
 import type {ValidationPipeOptions} from '@nestjs/common';
 
-import {RpcBadRequestException} from '../../../../shared/exceptions/bad-request.exception';
+import {RpcBadRequestException} from '../../../../src/shared/exceptions/bad-request.exception';
 
 export const validationOptions: ValidationPipeOptions = {
 	disableErrorMessages: true,

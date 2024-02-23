@@ -1,6 +1,6 @@
 import {Controller, UseFilters} from '@nestjs/common';
 
-import {ExceptionFilter} from '../../../../shared/filters/rpc-exception.filter';
+import {ExceptionFilter} from '../../../../src/shared/filters/rpc-exception.filter';
 import {StationService} from './station.service';
 
 @UseFilters(ExceptionFilter)
