@@ -1,20 +1,29 @@
-import {INestApplication, INestMicroservice} from '@nestjs/common';
+import {INestApplication} from '@nestjs/common';
 import {ClientGrpc, ClientsModule} from '@nestjs/microservices';
+import {MongooseModule, getModelToken} from '@nestjs/mongoose';
 import {Test, TestingModule} from '@nestjs/testing';
+import {MongoMemoryServer} from 'mongodb-memory-server';
+import mongoose, {Model} from 'mongoose';
 
 import {CompanyModule} from '../src/company/company.module';
+import {Company} from '../src/company/company.schema';
 import type {CompanyService} from '../src/company/company.service';
 import {grpcClientOptions} from '../src/options/grpc-client.options';
 
 describe('Company Microservice (integration)', () => {
+	let mongod: MongoMemoryServer;
 	let app: INestApplication;
-	let microservice: INestMicroservice;
 	let companyService: CompanyService;
 	let moduleFixture: TestingModule;
+	let model: Model<Company>;
 
 	beforeAll(async () => {
+		mongod = await MongoMemoryServer.create();
+		const mongoUri = await mongod.getUri();
+
 		moduleFixture = await Test.createTestingModule({
 			imports: [
+				MongooseModule.forRoot(mongoUri),
 				CompanyModule,
 				ClientsModule.register([
 					{
@@ -26,9 +35,11 @@ describe('Company Microservice (integration)', () => {
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
-		microservice = app.connectMicroservice(grpcClientOptions, {
+		app.connectMicroservice(grpcClientOptions, {
 			inheritAppConfig: true, // enable global pipes for hybrid app
 		});
+
+		model = app.get<Model<Company>>(getModelToken(Company.name));
 
 		await app.startAllMicroservices();
 		await app.init();
@@ -37,8 +48,14 @@ describe('Company Microservice (integration)', () => {
 		companyService = client.getService<CompanyService>('CompanyService');
 	});
 
+	afterEach(async () => {
+		await model.deleteMany({});
+	});
+
 	afterAll(async () => {
 		await app.close();
+		mongoose.connection.close();
+		if (mongod) await mongod.stop();
 	});
 
 	it('should boot', () => {
