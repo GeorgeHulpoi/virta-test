@@ -3,9 +3,9 @@ import {InjectModel} from '@nestjs/mongoose';
 import {Model, Types} from 'mongoose';
 import {Observable, from} from 'rxjs';
 
-import {RpcBadRequestException} from '../exceptions/bad-request.exception';
-import {RpcInternalException} from '../exceptions/internal.exception';
-import {RpcNotFoundException} from '../exceptions/not-found.exception';
+import {RpcBadRequestException} from '../../../../shared/exceptions/bad-request.exception';
+import {RpcInternalException} from '../../../../shared/exceptions/internal.exception';
+import {RpcNotFoundException} from '../../../../shared/exceptions/not-found.exception';
 import {Company, CompanyDocument, CompanyPOJO} from './company.schema';
 import {CreateCompanyDTO} from './dtos/create-company.dto';
 import {FindCompanyByIdDTO} from './dtos/find-company-by-id.dto';
