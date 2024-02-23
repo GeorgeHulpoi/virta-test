@@ -335,7 +335,88 @@ describe('Company Microservice (integration)', () => {
 			});
 		});
 	});
+
+	describe('Delete', () => {
+		it('should throw RpcNotFoundException when not exist', (done) => {
+			companyService
+				.delete({
+					id: '65d6579d8ac2b03dafa32f73',
+				})
+				.subscribe({
+					next: () => {
+						done('should throw RpcNotFoundException');
+					},
+					error: (err) => {
+						shouldBeRpcNotFoundException(err);
+						done();
+					},
+				});
+		});
+
+		describe('should delete', () => {
+			let microsoft: CompanyPOJO;
+			let deleteResponse: object;
+
+			beforeEach(async () => {
+				microsoft = await firstValueFrom(
+					companyService.create({
+						name: 'Microsoft',
+					}),
+				);
+
+				await firstValueFrom(
+					companyService.create({
+						name: 'Skype',
+						parent: microsoft.id,
+					}),
+				);
+
+				await firstValueFrom(
+					companyService.create({
+						name: 'Azure',
+						parent: microsoft.id,
+					}),
+				);
+
+				deleteResponse = await firstValueFrom(
+					companyService.delete({
+						id: microsoft.id,
+					}),
+				);
+			});
+
+			it('and return empty object', () => {
+				expect(deleteResponse).toEqual({});
+			});
+
+			it('and reflect in database', async () => {
+				const doc = await model.findById(microsoft.id).lean().exec();
+				expect(doc).toBeNull();
+			});
+
+			it('and update other docs parent', async () => {
+				const docs = await model
+					.find({
+						parent: Types.ObjectId.createFromHexString(
+							microsoft.id,
+						),
+					})
+					.lean()
+					.exec();
+				expect(docs).toHaveLength(0);
+			});
+
+			it('and not delete other docs', async () => {
+				const docs = await model.find().lean().exec();
+				expect(docs).toHaveLength(2);
+			});
+		});
+	});
 });
+
+function shouldBeRpcNotFoundException(err) {
+	expect(err.code).toEqual(status.NOT_FOUND);
+}
 
 function shouldBeRpcBadRequestException(err) {
 	expect(err).toBeInstanceOf(Error);

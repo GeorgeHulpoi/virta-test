@@ -1,6 +1,6 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
-import {Model} from 'mongoose';
+import {Model, Types} from 'mongoose';
 import {Observable, from} from 'rxjs';
 
 import {RpcBadRequestException} from '../exceptions/bad-request.exception';
@@ -9,6 +9,7 @@ import {RpcNotFoundException} from '../exceptions/not-found.exception';
 import {Company, CompanyDocument, CompanyPOJO} from './company.schema';
 import {CreateCompanyDTO} from './dtos/create-company.dto';
 import {UpdateCompanyByIdDTO} from './dtos/update-company.dto';
+import {FindCompanyByIdDTO} from './dtos/find-company-by-id.dto';
 
 @Injectable()
 export class CompanyService {
@@ -55,6 +56,34 @@ export class CompanyService {
 					return doc;
 				}),
 		);
+	}
+
+	delete(findCompanyByIdDTO: FindCompanyByIdDTO): Observable<object> {
+		const {id} = findCompanyByIdDTO;
+
+		const updateParent$ = this.model
+			.updateMany(
+				{
+					parent: Types.ObjectId.createFromHexString(id),
+				},
+				{
+					$unset: {
+						parent: '',
+					},
+				},
+			)
+			.exec()
+			.catch(this.catchError.bind(this));
+
+		const delete$ = this.model
+			.findByIdAndDelete(id)
+			.exec()
+			.catch(this.catchError.bind(this))
+			.then((doc) => {
+				if (!doc) throw new RpcNotFoundException();
+			});
+
+		return from(delete$.then(() => updateParent$).then(() => ({})));
 	}
 
 	private catchError(err: Error) {

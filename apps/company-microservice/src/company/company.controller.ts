@@ -5,8 +5,9 @@ import {Observable} from 'rxjs';
 import {CompanyPOJO} from './company.schema';
 import {CompanyService} from './company.service';
 import {CreateCompanyDTO} from './dtos/create-company.dto';
-import {ExceptionFilter} from './filters/rpc-exception.filter';
+import {FindCompanyByIdDTO} from './dtos/find-company-by-id.dto';
 import {UpdateCompanyByIdDTO} from './dtos/update-company.dto';
+import {ExceptionFilter} from './filters/rpc-exception.filter';
 
 @UseFilters(ExceptionFilter)
 @Controller()
@@ -23,5 +24,10 @@ export class CompanyController {
 		updateCompanyByIdDTO: UpdateCompanyByIdDTO,
 	): Observable<CompanyPOJO> {
 		return this.companyService.update(updateCompanyByIdDTO);
+	}
+
+	@GrpcMethod('CompanyService', 'Delete')
+	delete(findCompanyByIdDTO: FindCompanyByIdDTO): Observable<object> {
+		return this.companyService.delete(findCompanyByIdDTO);
 	}
 }
