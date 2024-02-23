@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package station;
+
+service StationService {
+    rpc EmptyRpc (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}
