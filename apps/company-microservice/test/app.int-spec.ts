@@ -9,10 +9,10 @@ import mongoose, {Model, Types} from 'mongoose';
 import {firstValueFrom, take} from 'rxjs';
 
 import {CompanyModule} from '../src/company/company.module';
-import {Company, CompanyPOJO} from '../src/company/company.schema';
-import type {CompanyService} from '../src/company/company.service';
+import {Company} from '../src/company/company.schema';
 import {grpcClientOptions} from '../src/options/grpc-client.options';
 import {validationOptions} from '../src/options/validation.options';
+import type {CompanyService, Company as CompanyResponse} from '../src/types';
 
 describe('Company Microservice (integration)', () => {
 	let mongod: MongoMemoryServer;
@@ -113,7 +113,7 @@ describe('Company Microservice (integration)', () => {
 		});
 
 		describe('should create company', () => {
-			let company: CompanyPOJO;
+			let company: CompanyResponse;
 
 			beforeEach(async () => {
 				company = await firstValueFrom(
@@ -143,8 +143,8 @@ describe('Company Microservice (integration)', () => {
 		});
 
 		describe('should crate company with parent', () => {
-			let parentCompany: CompanyPOJO;
-			let company: CompanyPOJO;
+			let parentCompany: CompanyResponse;
+			let company: CompanyResponse;
 
 			beforeEach(async () => {
 				parentCompany = await firstValueFrom(
@@ -187,7 +187,7 @@ describe('Company Microservice (integration)', () => {
 
 	describe('Update', () => {
 		describe('should throw RpcBadRequestException', () => {
-			let company: CompanyPOJO;
+			let company: CompanyResponse;
 
 			const updateWrapper = (done, payload: any) => {
 				companyService
@@ -249,8 +249,8 @@ describe('Company Microservice (integration)', () => {
 		});
 
 		describe('should update name', () => {
-			let company: CompanyPOJO;
-			let updatedCompany: CompanyPOJO;
+			let company: CompanyResponse;
+			let updatedCompany: CompanyResponse;
 
 			beforeEach(async () => {
 				company = await firstValueFrom(
@@ -287,9 +287,9 @@ describe('Company Microservice (integration)', () => {
 		});
 
 		describe('should update parent', () => {
-			let parentCompany: CompanyPOJO;
-			let company: CompanyPOJO;
-			let updatedCompany: CompanyPOJO;
+			let parentCompany: CompanyResponse;
+			let company: CompanyResponse;
+			let updatedCompany: CompanyResponse;
 
 			beforeEach(async () => {
 				parentCompany = await firstValueFrom(
@@ -354,7 +354,7 @@ describe('Company Microservice (integration)', () => {
 		});
 
 		describe('should delete', () => {
-			let microsoft: CompanyPOJO;
+			let microsoft: CompanyResponse;
 			let deleteResponse: object;
 
 			beforeEach(async () => {

@@ -8,8 +8,8 @@ import {RpcInternalException} from '../exceptions/internal.exception';
 import {RpcNotFoundException} from '../exceptions/not-found.exception';
 import {Company, CompanyDocument, CompanyPOJO} from './company.schema';
 import {CreateCompanyDTO} from './dtos/create-company.dto';
-import {UpdateCompanyByIdDTO} from './dtos/update-company.dto';
 import {FindCompanyByIdDTO} from './dtos/find-company-by-id.dto';
+import {UpdateCompanyByIdDTO} from './dtos/update-company.dto';
 
 @Injectable()
 export class CompanyService {
