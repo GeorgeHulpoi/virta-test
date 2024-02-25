@@ -26,13 +26,15 @@ describe('Company Microservice (integration)', () => {
 		mongod = await MongoMemoryServer.create();
 		const mongoUri = await mongod.getUri();
 
+		const clientOptions = grpcClientOptions('localhost:5000');
+
 		moduleFixture = await Test.createTestingModule({
 			imports: [
 				MongooseModule.forRoot(mongoUri),
 				CompanyModule,
 				ClientsModule.register([
 					{
-						...grpcClientOptions,
+						...clientOptions,
 						name: 'COMPANY_PACKAGE',
 					},
 				]),
@@ -40,9 +42,9 @@ describe('Company Microservice (integration)', () => {
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
-		useContainer(app, {fallbackOnErrors: true});
+		useContainer(app.select(CompanyModule), {fallbackOnErrors: true});
 		app.useGlobalPipes(new ValidationPipe(validationOptions));
-		app.connectMicroservice(grpcClientOptions, {
+		app.connectMicroservice(clientOptions, {
 			inheritAppConfig: true, // enable global pipes for hybrid app
 		});
 
@@ -66,7 +68,6 @@ describe('Company Microservice (integration)', () => {
 	});
 
 	it('should boot', () => {
-		expect(true).toBeTruthy();
 		expect(companyService).toBeDefined();
 	});
 

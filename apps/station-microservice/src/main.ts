@@ -10,7 +10,7 @@ import {validationOptions} from './options/validation.options';
 async function bootstrap() {
 	const app = await NestFactory.createMicroservice<MicroserviceOptions>(
 		AppModule,
-		grpcClientOptions,
+		grpcClientOptions(`0.0.0.0:${process.env.PORT}`),
 	);
 
 	useContainer(app, {fallbackOnErrors: true});

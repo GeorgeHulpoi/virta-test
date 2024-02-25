@@ -6,7 +6,7 @@
 	"private": true,
 	"license": "UNLICENSED",
 	"scripts": {
-		"build": "pnpm run build:company && pnpm run build:station",
+		"build": "pnpm run build:company && pnpm run build:station && pnpm run build:api-gateway",
 		"format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
 		"start": "nest start",
 		"start:dev": "nest start --watch",
@@ -25,7 +25,10 @@
 		"clean:station": "rimraf dist/apps/station-microservice",
 		"test:station:int": "jest --config ./apps/station-microservice/test/jest-int.json --forceExit",
 		"copyfiles:station": "copyfiles -u 1 ./proto/* ./dist/apps/station-microservice/proto && copyfiles -f ./apps/station-microservice/package.json ./dist/apps/station-microservice && copyfiles -f ./apps/station-microservice/Dockerfile ./dist/apps/station-microservice && copyfiles -f ./apps/station-microservice/.dockerignore ./dist/apps/station-microservice",
-		"build:station": "pnpm run clean:station && nest build station-microservice && pnpm run copyfiles:station"
+		"build:station": "pnpm run clean:station && nest build station-microservice && pnpm run copyfiles:station",
+		"clean:api-gateway": "rimraf dist/apps/api-gateway",
+		"copyfiles:api-gateway": "copyfiles -u 1 ./proto/* ./dist/apps/api-gateway/proto && copyfiles -f ./apps/api-gateway/package.json ./dist/apps/api-gateway && copyfiles -f ./apps/api-gateway/Dockerfile ./dist/apps/api-gateway && copyfiles -f ./apps/api-gateway/.dockerignore ./dist/apps/api-gateway",
+		"build:api-gateway": "pnpm run clean:api-gateway && nest build api-gateway && pnpm run copyfiles:api-gateway"
 	},
 	"dependencies": {
 		"@grpc/grpc-js": "^1.10.1",

@@ -27,6 +27,8 @@ describe('Station Microservice (integration)', () => {
 		mongod = await MongoMemoryServer.create();
 		const mongoUri = await mongod.getUri();
 
+		const clientOptions = grpcClientOptions('localhost:5000');
+
 		moduleFixture = await Test.createTestingModule({
 			imports: [
 				MongooseModule.forRoot(mongoUri),
@@ -40,7 +42,7 @@ describe('Station Microservice (integration)', () => {
 				}),
 				ClientsModule.register([
 					{
-						...grpcClientOptions,
+						...clientOptions,
 						name: 'STATION_PACKAGE',
 					},
 				]),
@@ -50,7 +52,7 @@ describe('Station Microservice (integration)', () => {
 		app = moduleFixture.createNestApplication();
 		useContainer(app, {fallbackOnErrors: true});
 		app.useGlobalPipes(new ValidationPipe(validationOptions));
-		app.connectMicroservice(grpcClientOptions, {
+		app.connectMicroservice(clientOptions, {
 			inheritAppConfig: true, // enable global pipes for hybrid app
 		});
 

@@ -12,7 +12,9 @@ import {StationModule} from './station/station.module';
 			imports: [
 				ClientsModule.register([
 					{
-						...companyGrpcClientOptions,
+						...companyGrpcClientOptions(
+							process.env.COMPANY_GRPC_URL,
+						),
 						name: 'COMPANY_PACKAGE',
 					},
 				]),
