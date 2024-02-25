@@ -19,6 +19,7 @@ services:
       - "5001:5001"
     environment:
       DATABASE_URI: mongodb://root:123456@mongo:27017/
+      COMPANY_GRPC_URL: company-microservice:5000
   api-gateway:
     build: ./dist/apps/api-gateway
     ports: 
