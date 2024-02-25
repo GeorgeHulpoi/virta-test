@@ -22,9 +22,7 @@ export function CompanyExist(
 }
 
 @ValidatorConstraint({async: true})
-export class CompanyExistConstraint
-	implements ValidatorConstraintInterface
-{
+export class CompanyExistConstraint implements ValidatorConstraintInterface {
 	constructor(private readonly companyService: CompanyService) {}
 
 	validate(id: any): boolean | Promise<boolean> {
