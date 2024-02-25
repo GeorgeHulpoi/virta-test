@@ -6,7 +6,7 @@
 	"private": true,
 	"license": "UNLICENSED",
 	"scripts": {
-		"build": "nest build",
+		"build": "pnpm run build:company && pnpm run build:station",
 		"format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
 		"start": "nest start",
 		"start:dev": "nest start --watch",
@@ -18,10 +18,14 @@
 		"test:cov": "jest --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
 		"test:e2e": "jest --config ./apps/virta-test/test/jest-e2e.json",
-		"build:company": "pnpm run clean:company && nest build company-microservice && copyfiles -u 1 ./proto/* ./dist/apps/company-microservice/proto && copyfiles -f ./apps/company-microservice/package.json ./dist/apps/company-microservice && copyfiles -f ./apps/company-microservice/Dockerfile ./dist/apps/company-microservice && copyfiles -f ./apps/company-microservice/.dockerignore ./dist/apps/company-microservice",
+		"copyfiles:company": "copyfiles -u 1 ./proto/* ./dist/apps/company-microservice/proto && copyfiles -f ./apps/company-microservice/package.json ./dist/apps/company-microservice && copyfiles -f ./apps/company-microservice/Dockerfile ./dist/apps/company-microservice && copyfiles -f ./apps/company-microservice/.dockerignore ./dist/apps/company-microservice",
+		"build:company": "pnpm run clean:company && nest build company-microservice && pnpm run copyfiles:company",
 		"clean:company": "rimraf dist/apps/company-microservice",
 		"test:company:int": "jest --config ./apps/company-microservice/test/jest-int.json --forceExit",
-		"test:station:int": "jest --config ./apps/station-microservice/test/jest-int.json --forceExit"
+		"clean:station": "rimraf dist/apps/station-microservice",
+		"test:station:int": "jest --config ./apps/station-microservice/test/jest-int.json --forceExit",
+		"copyfiles:station": "copyfiles -u 1 ./proto/* ./dist/apps/station-microservice/proto && copyfiles -f ./apps/station-microservice/package.json ./dist/apps/station-microservice && copyfiles -f ./apps/station-microservice/Dockerfile ./dist/apps/station-microservice && copyfiles -f ./apps/station-microservice/.dockerignore ./dist/apps/station-microservice",
+		"build:station": "pnpm run clean:station && nest build station-microservice && pnpm run copyfiles:station"
 	},
 	"dependencies": {
 		"@grpc/grpc-js": "^1.10.1",

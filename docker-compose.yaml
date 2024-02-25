@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+  company-microservice:
+    build: ./dist/apps/company-microservice
+    ports: 
+      - "5000:5000"
+    environment:
+      DATABASE_URI: mongodb://root:123456@mongo:27017/
+  station-microservice:
+    build: ./dist/apps/station-microservice
+    ports: 
+      - "5001:5001"
+    environment:
+      DATABASE_URI: mongodb://root:123456@mongo:27017/
