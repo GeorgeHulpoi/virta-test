@@ -7,6 +7,7 @@ import {StationService} from './station.service';
 import {StationPOJO} from './station.schema';
 import {CreateStationDTO} from './dtos/create-station.dto';
 import {UpdateStationByIdDTO} from './dtos/update-company.dto';
+import {FindStationByIdDTO} from './dtos/find-station-by-id.dto';
 
 @UseFilters(ExceptionFilter)
 @Controller()
@@ -23,5 +24,10 @@ export class StationController {
 		updateStationByIdDTO: UpdateStationByIdDTO,
 	): Observable<StationPOJO> {
 		return this.stationService.update(updateStationByIdDTO);
+	}
+
+	@GrpcMethod('StationService', 'Delete')
+	delete(findCompanyByIdDTO: FindStationByIdDTO): Observable<object> {
+		return this.stationService.delete(findCompanyByIdDTO);
 	}
 }

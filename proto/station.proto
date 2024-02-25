@@ -1,10 +1,13 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 package station;
 
 service StationService {
     rpc Create (CreateStation) returns (Station) {}
     rpc Update (UpdateStation) returns (Station) {}
+    rpc Delete (FindStationById) returns (google.protobuf.Empty) {}
 }
 
 message Station {
@@ -31,4 +34,8 @@ message UpdateStation {
 	optional double longitude = 4;
     optional string company = 5;
     optional string address = 6;
+}
+
+message FindStationById {
+    string id = 1;
 }

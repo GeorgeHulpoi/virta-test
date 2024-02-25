@@ -9,6 +9,7 @@ import {RpcNotFoundException} from '../../../../src/shared/exceptions/not-found.
 import {CreateStationDTO} from './dtos/create-station.dto';
 import {UpdateStationByIdDTO} from './dtos/update-company.dto';
 import {Station, StationDocument, StationPOJO} from './station.schema';
+import {FindStationByIdDTO} from './dtos/find-station-by-id.dto';
 
 @Injectable()
 export class StationService {
@@ -53,6 +54,21 @@ export class StationService {
 
 				return from(doc.save());
 			}),
+		);
+	}
+
+	delete(FindStationByIdDTO: FindStationByIdDTO): Observable<object> {
+		const {id} = FindStationByIdDTO;
+
+		return from(
+			this.model
+				.findByIdAndDelete(id)
+				.exec()
+				.catch(this.catchError.bind(this))
+				.then((doc) => {
+					if (!doc) throw new RpcNotFoundException();
+					return {};
+				}),
 		);
 	}
 

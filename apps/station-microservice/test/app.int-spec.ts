@@ -594,4 +594,82 @@ describe('Station Microservice (integration)', () => {
 			});
 		});
 	});
+
+	describe('Delete', () => {
+		it('should throw RpcNotFoundException when not exist', (done) => {
+			stationService
+				.Delete({
+					id: '65d6579d8ac2b03dafa32f73',
+				})
+				.subscribe({
+					next: () => {
+						done('should throw RpcNotFoundException');
+					},
+					error: (err) => {
+						shouldBeRpcNotFoundException(err);
+						done();
+					},
+				});
+		});
+
+		describe('should delete', () => {
+			let teslaStation1: StationResponse;
+			let deleteResponse: object;
+
+			beforeEach(async () => {
+				teslaStation1 = await firstValueFrom(
+					stationService.Create({
+						name: 'Tesla Station 1',
+						company: '65db2c9e9cc5e873cdd4b9dd',
+						longitude: 22,
+						latitude: 22,
+						address: 'str. Darmanesti',
+					}),
+				);
+
+				await firstValueFrom(
+					stationService.Create({
+						name: 'Tesla Station 2',
+						company: '65db2c9e9cc5e873cdd4b9dd',
+						longitude: 22,
+						latitude: 22,
+						address: 'str. Darmanesti',
+					}),
+				);
+
+				await firstValueFrom(
+					stationService.Create({
+						name: 'Tesla Station 3',
+						company: '65db2c9e9cc5e873cdd4b9dd',
+						longitude: 22,
+						latitude: 22,
+						address: 'str. Darmanesti',
+					}),
+				);
+
+				deleteResponse = await firstValueFrom(
+					stationService.Delete({
+						id: teslaStation1.id,
+					}),
+				);
+			});
+
+			it('and return empty object', () => {
+				expect(deleteResponse).toEqual({});
+			});
+
+			it('and reflect in database', async () => {
+				const doc = await model
+					.findById(teslaStation1.id)
+					.lean()
+					.exec();
+				expect(doc).toBeNull();
+			});
+
+			it('and not delete other docs', async () => {
+				const docs = await model.find().lean().exec();
+				expect(docs).toHaveLength(2);
+			});
+		});
+	});
 });
