@@ -1,4 +1,3 @@
-import {status} from '@grpc/grpc-js';
 import {INestApplication, ValidationPipe} from '@nestjs/common';
 import {ClientGrpc, ClientsModule} from '@nestjs/microservices';
 import {MongooseModule, getModelToken} from '@nestjs/mongoose';
@@ -8,11 +7,13 @@ import {MongoMemoryServer} from 'mongodb-memory-server';
 import mongoose, {Model, Types} from 'mongoose';
 import {firstValueFrom, take} from 'rxjs';
 
+import {shouldBeRpcBadRequestException} from '../../../src/tests/asserts/shouldBeRpcBadExceptionException';
+import {shouldBeRpcNotFoundException} from '../../../src/tests/asserts/shouldBeRpcNotFoundException';
 import {CompanyModule} from '../src/company/company.module';
 import {Company} from '../src/company/company.schema';
 import {grpcClientOptions} from '../src/options/grpc-client.options';
 import {validationOptions} from '../src/options/validation.options';
-import type {CompanyService, Company as CompanyResponse} from '../src/types';
+import type {Company as CompanyResponse, CompanyService} from '../src/types';
 
 describe('Company Microservice (integration)', () => {
 	let mongod: MongoMemoryServer;
@@ -453,16 +454,3 @@ describe('Company Microservice (integration)', () => {
 		});
 	});
 });
-
-function shouldBeRpcNotFoundException(err) {
-	expect(err.code).toEqual(status.NOT_FOUND);
-}
-
-function shouldBeRpcBadRequestException(err) {
-	expect(err).toBeInstanceOf(Error);
-	expect(err.code).toEqual(status.UNKNOWN);
-	expect(err.details).toBeDefined();
-	const details = JSON.parse(err.details);
-	expect(details.error?.statusCode).toEqual(400);
-	expect(details.type).toEqual('object');
-}
