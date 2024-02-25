@@ -13,7 +13,7 @@ async function bootstrap() {
 		grpcClientOptions(`0.0.0.0:${process.env.PORT}`),
 	);
 
-	useContainer(app, {fallbackOnErrors: true});
+	useContainer(app.select(AppModule), {fallbackOnErrors: true});
 	app.useGlobalPipes(new ValidationPipe(validationOptions));
 
 	await app.listen();
