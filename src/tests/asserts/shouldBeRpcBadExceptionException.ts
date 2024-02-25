@@ -1,7 +1,6 @@
 import {status} from '@grpc/grpc-js';
 
 export function shouldBeRpcBadRequestException(err) {
-	console.log(err);
 	expect(err).toBeInstanceOf(Error);
 	expect(err.code).toEqual(status.UNKNOWN);
 	expect(err.details).toBeDefined();

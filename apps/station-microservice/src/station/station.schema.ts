@@ -20,12 +20,6 @@ export class Location {
 @Schema({
 	versionKey: false,
 	id: true,
-	toJSON: {
-		virtuals: true,
-	},
-	toObject: {
-		virtuals: true,
-	},
 })
 export class Station {
 	id: string;
@@ -86,6 +80,8 @@ StationSchema.virtual('longitude')
 	});
 
 StationSchema.set('toJSON', {
+	virtuals: true,
+	getters: true,
 	transform: function (doc, ret) {
 		delete ret.location;
 		delete ret._id;
@@ -93,6 +89,8 @@ StationSchema.set('toJSON', {
 });
 
 StationSchema.set('toObject', {
+	virtuals: true,
+	getters: true,
 	transform: function (doc, ret) {
 		delete ret.location;
 		delete ret._id;

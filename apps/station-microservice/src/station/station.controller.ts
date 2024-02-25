@@ -6,6 +6,7 @@ import {ExceptionFilter} from '../../../../src/shared/filters/rpc-exception.filt
 import {StationService} from './station.service';
 import {StationPOJO} from './station.schema';
 import {CreateStationDTO} from './dtos/create-station.dto';
+import {UpdateStationByIdDTO} from './dtos/update-company.dto';
 
 @UseFilters(ExceptionFilter)
 @Controller()
@@ -15,5 +16,12 @@ export class StationController {
 	@GrpcMethod('StationService', 'Create')
 	create(createCompanyDto: CreateStationDTO): Observable<StationPOJO> {
 		return this.stationService.create(createCompanyDto);
+	}
+
+	@GrpcMethod('StationService', 'Update')
+	update(
+		updateStationByIdDTO: UpdateStationByIdDTO,
+	): Observable<StationPOJO> {
+		return this.stationService.update(updateStationByIdDTO);
 	}
 }

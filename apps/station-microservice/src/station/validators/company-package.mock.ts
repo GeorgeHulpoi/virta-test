@@ -9,6 +9,11 @@ export const companyPackageMock = {
 						id: id,
 						name: 'Apple',
 					});
+				} else if (id === '65db2c9e9cc5e873cdd4b9dd') {
+					return of({
+						id: id,
+						name: 'Tesla',
+					});
 				} else if (id === '65db233c003af0f3d9c51691') {
 					return throwError(() => new Error('unknown'));
 				} else {

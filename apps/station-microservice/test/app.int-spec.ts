@@ -14,6 +14,7 @@ import {StationModule} from '../src/station/station.module';
 import {Station} from '../src/station/station.schema';
 import type {Station as StationResponse, StationService} from '../src/types';
 import {companyPackageMock} from '../src/station/validators/company-package.mock';
+import {shouldBeRpcNotFoundException} from '../../../src/tests/asserts/shouldBeRpcNotFoundException';
 
 describe('Station Microservice (integration)', () => {
 	let mongod: MongoMemoryServer;
@@ -269,6 +270,324 @@ describe('Station Microservice (integration)', () => {
 								defaultPayload.longitude,
 								defaultPayload.latitude,
 							],
+						},
+					}),
+				);
+			});
+		});
+	});
+
+	describe('Update', () => {
+		let station: StationResponse;
+		const defaultPayload = {
+			name: 'Apple Station',
+			latitude: 47.158822701824825,
+			longitude: 27.600695367147683,
+			company: '65db10f06548ed49254454a0',
+			address: 'str. Darmanesti',
+		};
+
+		beforeEach(async () => {
+			station = await firstValueFrom(
+				stationService.Create(defaultPayload),
+			);
+		});
+
+		it('should throw RpcNotFoundException', (done) => {
+			stationService
+				.Update({
+					...defaultPayload,
+					id: '65db233c003af0f3d9c51692',
+				})
+				.pipe(take(1))
+				.subscribe({
+					next: () => {
+						done('should throw RpcNotFoundException');
+					},
+					error: (err) => {
+						shouldBeRpcNotFoundException(err);
+						done();
+					},
+				});
+		});
+
+		describe('should throw RpcBadRequestException', () => {
+			const updateWrapper = (done, payload: any) => {
+				stationService
+					.Update(payload)
+					.pipe(take(1))
+					.subscribe({
+						next: () => {
+							done('should throw RpcBadRequestException');
+						},
+						error: (err) => {
+							shouldBeRpcBadRequestException(err);
+							done();
+						},
+					});
+			};
+
+			it('when empty', (done) => {
+				updateWrapper(done, {});
+			});
+
+			describe('when name', () => {
+				it('is empty string', (done) => {
+					updateWrapper(done, {
+						name: '',
+					});
+				});
+
+				it('length is bigger than 128', (done) => {
+					updateWrapper(done, {
+						name: 'A'.repeat(129),
+					});
+				});
+			});
+
+			describe('when latitude', () => {
+				it('is string', (done) => {
+					updateWrapper(done, {
+						latitude: 'string',
+					});
+				});
+
+				it('is too small', (done) => {
+					updateWrapper(done, {
+						latitude: -91,
+					});
+				});
+
+				it('is too big', (done) => {
+					updateWrapper(done, {
+						latitude: 91,
+					});
+				});
+			});
+
+			describe('when longitude', () => {
+				it('is string', (done) => {
+					updateWrapper(done, {
+						longitude: 'string',
+					});
+				});
+
+				it('is too small', (done) => {
+					updateWrapper(done, {
+						latitude: -181,
+					});
+				});
+
+				it('is too big', (done) => {
+					updateWrapper(done, {
+						latitude: 181,
+					});
+				});
+			});
+
+			describe('when company', () => {
+				it('is is not mongo id', (done) => {
+					updateWrapper(done, {
+						company: '1',
+					});
+				});
+
+				it("is doesn't exist", (done) => {
+					updateWrapper(done, {
+						company: '65db10e66ef55dd08fb3d69f',
+					});
+				});
+			});
+
+			describe('when address', () => {
+				it('is empty string', (done) => {
+					updateWrapper(done, {
+						address: '',
+					});
+				});
+
+				it('length is bigger than 256', (done) => {
+					updateWrapper(done, {
+						address: 'A'.repeat(257),
+					});
+				});
+			});
+		});
+
+		describe('should update', () => {
+			const defaultDoc = {
+				name: 'Apple Station',
+				location: {
+					type: 'Point',
+					coordinates: [27.600695367147683, 47.158822701824825],
+				},
+				company: Types.ObjectId.createFromHexString(
+					'65db10f06548ed49254454a0',
+				),
+				address: 'str. Darmanesti',
+			};
+
+			it('name', async () => {
+				const result = await firstValueFrom(
+					stationService.Update({
+						id: station.id,
+						name: 'Tesla Station',
+					}),
+				);
+
+				expect(result).toEqual(
+					expect.objectContaining({
+						...defaultPayload,
+						name: 'Tesla Station',
+					}),
+				);
+
+				const doc = await model.findById(station.id).lean().exec();
+
+				expect(doc).toEqual(
+					expect.objectContaining({
+						...defaultDoc,
+						name: 'Tesla Station',
+					}),
+				);
+			});
+
+			it('company', async () => {
+				const result = await firstValueFrom(
+					stationService.Update({
+						id: station.id,
+						company: '65db2c9e9cc5e873cdd4b9dd',
+					}),
+				);
+
+				expect(result).toEqual(
+					expect.objectContaining({
+						...defaultPayload,
+						company: '65db2c9e9cc5e873cdd4b9dd',
+					}),
+				);
+
+				const doc = await model.findById(station.id).lean().exec();
+
+				expect(doc).toEqual(
+					expect.objectContaining({
+						...defaultDoc,
+						company: Types.ObjectId.createFromHexString(
+							'65db2c9e9cc5e873cdd4b9dd',
+						),
+					}),
+				);
+			});
+
+			it('address', async () => {
+				const result = await firstValueFrom(
+					stationService.Update({
+						id: station.id,
+						address: 'blvd. Chimiei',
+					}),
+				);
+
+				expect(result).toEqual(
+					expect.objectContaining({
+						...defaultPayload,
+						address: 'blvd. Chimiei',
+					}),
+				);
+
+				const doc = await model.findById(station.id).lean().exec();
+
+				expect(doc).toEqual(
+					expect.objectContaining({
+						...defaultDoc,
+						address: 'blvd. Chimiei',
+					}),
+				);
+			});
+
+			it('latitude', async () => {
+				const result = await firstValueFrom(
+					stationService.Update({
+						id: station.id,
+						latitude: 25,
+					}),
+				);
+
+				expect(result).toEqual(
+					expect.objectContaining({
+						...defaultPayload,
+						latitude: 25,
+					}),
+				);
+
+				const doc = await model.findById(station.id).lean().exec();
+
+				expect(doc).toEqual(
+					expect.objectContaining({
+						...defaultDoc,
+						location: {
+							type: 'Point',
+							coordinates: [27.600695367147683, 25],
+						},
+					}),
+				);
+			});
+
+			it('longitude', async () => {
+				const result = await firstValueFrom(
+					stationService.Update({
+						id: station.id,
+						longitude: 25,
+					}),
+				);
+
+				expect(result).toEqual(
+					expect.objectContaining({
+						...defaultPayload,
+						longitude: 25,
+					}),
+				);
+
+				const doc = await model.findById(station.id).lean().exec();
+
+				expect(doc).toEqual(
+					expect.objectContaining({
+						...defaultDoc,
+						location: {
+							type: 'Point',
+							coordinates: [25, 47.158822701824825],
+						},
+					}),
+				);
+			});
+
+			it('multiple fields', async () => {
+				const result = await firstValueFrom(
+					stationService.Update({
+						id: station.id,
+						name: 'Romania Station',
+						longitude: 25,
+						latitude: 25,
+					}),
+				);
+
+				expect(result).toEqual(
+					expect.objectContaining({
+						...defaultPayload,
+						name: 'Romania Station',
+						longitude: 25,
+						latitude: 25,
+					}),
+				);
+
+				const doc = await model.findById(station.id).lean().exec();
+
+				expect(doc).toEqual(
+					expect.objectContaining({
+						...defaultDoc,
+						name: 'Romania Station',
+						location: {
+							type: 'Point',
+							coordinates: [25, 25],
 						},
 					}),
 				);
