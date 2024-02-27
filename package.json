@@ -88,6 +88,18 @@
 		"collectCoverageFrom": [
 			"**/*.(t|j)s"
 		],
+		"coveragePathIgnorePatterns": [
+			".int-spec.ts",
+			".e2e-spec.ts",
+			".dto.ts",
+			".mock.ts",
+			".controller.ts",
+			".module.ts",
+			".schema.ts",
+			".options.ts",
+			"types.ts",
+			"main.ts"
+		],
 		"coverageDirectory": "./coverage",
 		"testEnvironment": "node",
 		"roots": [
