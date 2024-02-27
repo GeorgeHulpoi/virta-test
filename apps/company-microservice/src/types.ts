@@ -1,6 +1,7 @@
 import type {Observable} from 'rxjs';
 
 export interface CompanyService {
+	find(payload: object): Observable<CompanyList>;
 	findById(payload: FindCompanyById): Observable<Company>;
 	create(payload: CreateCompany): Observable<Company>;
 	update(payload: UpdateCompany): Observable<Company>;
@@ -18,3 +19,7 @@ export type CreateCompany = Omit<Company, 'id'>;
 export type FindCompanyById = Pick<Company, 'id'> & {includeChildren?: boolean};
 export type UpdateCompany = FindCompanyById & Partial<CreateCompany>;
 export type DeleteCompany = Pick<Company, 'id'>;
+
+export interface CompanyList {
+	data: Company[];
+}

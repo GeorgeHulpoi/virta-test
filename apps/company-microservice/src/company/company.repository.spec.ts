@@ -57,6 +57,53 @@ describe('CompanyRepository', () => {
 		});
 	});
 
+	describe('find', () => {
+		beforeEach(async () => {
+			await model.insertMany([
+				{
+					_id: Types.ObjectId.createFromHexString(
+						'65dcec4410bafd358172bafb',
+					),
+					name: 'Microsoft',
+				},
+				{
+					_id: Types.ObjectId.createFromHexString(
+						'65dceca410bafd358172baff',
+					),
+					name: 'Azure',
+					parent: Types.ObjectId.createFromHexString(
+						'65dcec4410bafd358172bafb',
+					),
+				},
+			]);
+		});
+
+		it('should return companies', async () => {
+			const companies = await repository.find();
+
+			expect(companies).toBeDefined();
+			expect(Array.isArray(companies)).toBe(true);
+			expect(companies).toHaveLength(2);
+
+			expect(companies).toContainEqual({
+				id: Types.ObjectId.createFromHexString(
+					'65dcec4410bafd358172bafb',
+				),
+				name: 'Microsoft',
+			});
+
+			expect(companies).toContainEqual({
+				id: Types.ObjectId.createFromHexString(
+					'65dceca410bafd358172baff',
+				),
+				name: 'Azure',
+				parent: Types.ObjectId.createFromHexString(
+					'65dcec4410bafd358172bafb',
+				),
+			});
+		});
+	});
+
 	describe('findById', () => {
 		beforeEach(async () => {
 			await model.insertMany([

@@ -15,6 +15,11 @@ import {UpdateCompanyByIdDTO} from './dtos/update-company.dto';
 export class CompanyController {
 	constructor(private readonly companyService: CompanyService) {}
 
+	@GrpcMethod('CompanyService', 'Find')
+	find(): Observable<{data: CompanyPOJO[]}> {
+		return this.companyService.find();
+	}
+
 	@GrpcMethod('CompanyService', 'FindById')
 	findByid(findCompanyByIdDTO: FindCompanyByIdDTO): Observable<CompanyPOJO> {
 		return this.companyService.findById(findCompanyByIdDTO);

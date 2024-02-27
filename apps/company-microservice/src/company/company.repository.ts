@@ -15,6 +15,21 @@ export class CompanyRepository {
 		private readonly model: Model<CompanyDocument>,
 	) {}
 
+	find(): Promise<CompanyPOJO[]> {
+		return this.model
+			.find()
+			.lean({virtuals: true})
+			.exec()
+			.catch(this.catchError.bind(this))
+			.then((docs) =>
+				docs.map((doc) => {
+					doc.id = Types.ObjectId.createFromHexString(doc.id);
+					delete doc._id;
+					return doc;
+				}),
+			);
+	}
+
 	findById(id: string): Promise<CompanyPOJO | null> {
 		return this.model
 			.findById(id)

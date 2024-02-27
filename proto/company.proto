@@ -5,6 +5,7 @@ import "google/protobuf/empty.proto";
 package company;
 
 service CompanyService {
+	rpc Find (google.protobuf.Empty) returns (CompanyList) {}
 	rpc FindById (FindCompanyById) returns (Company) {}
 	rpc Create (CreateCompany) returns (Company) {}
 	rpc Update (UpdateCompany) returns (Company) {}
@@ -32,4 +33,8 @@ message UpdateCompany {
 message FindCompanyById {
 	string id = 1;
 	optional bool includeChildren = 2;
+}
+
+message CompanyList {
+	repeated Company data = 1;
 }

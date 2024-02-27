@@ -15,6 +15,14 @@ import {UpdateCompanyByIdDTO} from './dtos/update-company.dto';
 export class CompanyService {
 	constructor(private readonly repository: CompanyRepository) {}
 
+	find(): Observable<{data: CompanyPOJO[]}> {
+		return from(
+			this.repository.find().then((docs) => ({
+				data: docs,
+			})),
+		);
+	}
+
 	findById(findCompanyByIdDTO: FindCompanyByIdDTO): Observable<CompanyPOJO> {
 		const {id, includeChildren} = findCompanyByIdDTO;
 		let doc$: Promise<CompanyPOJO | null>;

@@ -71,6 +71,45 @@ describe('Company Microservice (integration)', () => {
 		expect(companyService).toBeDefined();
 	});
 
+	describe('Find', () => {
+		let microsoft: CompanyResponse;
+		let azure: CompanyResponse;
+
+		beforeEach(async () => {
+			microsoft = await firstValueFrom(
+				companyService.create({
+					name: 'Microsoft',
+				}),
+			);
+
+			azure = await firstValueFrom(
+				companyService.create({
+					name: 'Azure',
+					parent: microsoft.id,
+				}),
+			);
+		});
+
+		it('should return companies', async () => {
+			const {data} = await firstValueFrom(companyService.find({}));
+
+			expect(data).toBeDefined();
+			expect(Array.isArray(data)).toBe(true);
+			expect(data).toHaveLength(2);
+
+			expect(data).toContainEqual({
+				id: microsoft.id,
+				name: 'Microsoft'
+			});
+
+			expect(data).toContainEqual({
+				id: azure.id,
+				name: 'Azure',
+				parent: microsoft.id,
+			});
+		});
+	});
+
 	describe('Find By Id', () => {
 		let microsoft: CompanyResponse;
 		let azure: CompanyResponse;
