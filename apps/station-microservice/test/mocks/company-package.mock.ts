@@ -3,7 +3,7 @@ import {of, throwError} from 'rxjs';
 export const companyPackageMock = {
 	getService: () => {
 		return {
-			findById: ({
+			FindById: ({
 				id,
 				includeChildren,
 			}: {
