@@ -5,7 +5,7 @@ import {
 	type ValidatorConstraintInterface,
 } from 'class-validator';
 
-import {CompanyService} from '../company.service';
+import {CompanyRepository} from '../company.repository';
 
 export function CompanyExist(
 	validationOptions?: ValidationOptions,
@@ -23,16 +23,13 @@ export function CompanyExist(
 
 @ValidatorConstraint({async: true})
 export class CompanyExistConstraint implements ValidatorConstraintInterface {
-	constructor(private readonly companyService: CompanyService) {}
+	constructor(private readonly repository: CompanyRepository) {}
 
 	validate(id: any): boolean | Promise<boolean> {
 		return (
 			!id ||
-			this.companyService
-				.getModel()
+			this.repository
 				.findById(id)
-				.lean()
-				.exec()
 				.then((doc) => doc != null)
 				.catch(() => false)
 		);
