@@ -1,18 +1,21 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 package company;
 
 service CompanyService {
 	rpc FindById (FindCompanyById) returns (Company) {}
 	rpc Create (CreateCompany) returns (Company) {}
 	rpc Update (UpdateCompany) returns (Company) {}
-	rpc Delete (FindCompanyById) returns (Empty) {}
+	rpc Delete (FindCompanyById) returns (google.protobuf.Empty) {}
 }
 
 message Company {
 	string id = 1;
 	optional string parent = 2;
 	string name = 3;
+	repeated Company children = 4;
 }
 
 message CreateCompany {
@@ -28,6 +31,5 @@ message UpdateCompany {
 
 message FindCompanyById {
 	string id = 1;
+	optional bool includeChildren = 2;
 }
-
-message Empty {}

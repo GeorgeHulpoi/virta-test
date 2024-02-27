@@ -72,25 +72,108 @@ describe('Company Microservice (integration)', () => {
 	});
 
 	describe('Find By Id', () => {
-		let company: CompanyResponse;
+		let microsoft: CompanyResponse;
+		let azure: CompanyResponse;
+		let skype: CompanyResponse;
+		let skypeRomania: CompanyResponse;
 
 		beforeEach(async () => {
-			company = await firstValueFrom(
+			microsoft = await firstValueFrom(
 				companyService.create({
-					name: 'Apple',
+					name: 'Microsoft',
+				}),
+			);
+
+			azure = await firstValueFrom(
+				companyService.create({
+					name: 'Azure',
+					parent: microsoft.id,
+				}),
+			);
+
+			skype = await firstValueFrom(
+				companyService.create({
+					name: 'Skype',
+					parent: microsoft.id,
+				}),
+			);
+
+			skypeRomania = await firstValueFrom(
+				companyService.create({
+					name: 'Skype Romania S.R.L.',
+					parent: skype.id,
 				}),
 			);
 		});
 
 		it('should find', async () => {
 			const result = await firstValueFrom(
-				companyService.findById({id: company.id}),
+				companyService.findById({id: microsoft.id}),
 			);
 
 			expect(result).toBeDefined();
 			expect(result).toEqual({
-				id: company.id,
-				name: 'Apple',
+				id: microsoft.id,
+				name: 'Microsoft',
+			});
+		});
+
+		it('should find with children 1', async () => {
+			const result = await firstValueFrom(
+				companyService.findById({
+					id: microsoft.id,
+					includeChildren: true,
+				}),
+			);
+
+			expect(result).toBeDefined();
+			expect(result).toEqual({
+				id: microsoft.id,
+				name: 'Microsoft',
+				children: expect.anything(),
+			});
+
+			expect(Array.isArray(result.children)).toBe(true);
+			expect(result.children).toHaveLength(3);
+			expect(result.children).toContainEqual({
+				id: azure.id,
+				name: 'Azure',
+				parent: microsoft.id,
+			});
+
+			expect(result.children).toContainEqual({
+				id: skype.id,
+				name: 'Skype',
+				parent: microsoft.id,
+			});
+
+			expect(result.children).toContainEqual({
+				id: skypeRomania.id,
+				name: 'Skype Romania S.R.L.',
+				parent: skype.id,
+			});
+		});
+
+		it('should find with children 2', async () => {
+			const result = await firstValueFrom(
+				companyService.findById({id: skype.id, includeChildren: true}),
+			);
+
+			expect(result).toBeDefined();
+			expect(result).toEqual({
+				id: skype.id,
+				name: 'Skype',
+				parent: microsoft.id,
+				children: expect.anything(),
+			});
+
+			expect(Array.isArray(result.children)).toBe(true);
+			expect(result.children).toHaveLength(1);
+
+			expect(result.children).toContainEqual({
+				id: skypeRomania.id,
+				name: 'Skype Romania S.R.L.',
+				parent: skype.id,
 			});
 		});
 

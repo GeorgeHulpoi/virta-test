@@ -6,8 +6,10 @@ import {Observable, from} from 'rxjs';
 import {RpcBadRequestException} from '../../../../src/shared/exceptions/bad-request.exception';
 import {RpcInternalException} from '../../../../src/shared/exceptions/internal.exception';
 import {RpcNotFoundException} from '../../../../src/shared/exceptions/not-found.exception';
+import {CompanyRepository} from './company.repository';
 import {Company, CompanyDocument, CompanyPOJO} from './company.schema';
 import {CreateCompanyDTO} from './dtos/create-company.dto';
+import {DeleteCompanyDTO} from './dtos/delete-company.dto';
 import {FindCompanyByIdDTO} from './dtos/find-company-by-id.dto';
 import {UpdateCompanyByIdDTO} from './dtos/update-company.dto';
 
@@ -18,6 +20,7 @@ export class CompanyService {
 	constructor(
 		@InjectModel(Company.name)
 		private readonly model: Model<CompanyDocument>,
+		private readonly repository: CompanyRepository,
 	) {}
 
 	getModel(): Model<CompanyDocument> {
@@ -25,17 +28,20 @@ export class CompanyService {
 	}
 
 	findById(findCompanyByIdDTO: FindCompanyByIdDTO): Observable<CompanyPOJO> {
-		const {id} = findCompanyByIdDTO;
+		const {id, includeChildren} = findCompanyByIdDTO;
+		let doc$: Promise<CompanyPOJO | null>;
+
+		if (includeChildren) {
+			doc$ = this.repository.findByIdWithChildren(id);
+		} else {
+			doc$ = this.repository.findById(id);
+		}
+
 		return from(
-			this.model
-				.findById(id)
-				.lean({virtuals: true})
-				.exec()
-				.catch(this.catchError.bind(this))
-				.then((doc) => {
-					if (!doc) throw new RpcNotFoundException();
-					return doc;
-				}),
+			doc$.then((doc) => {
+				if (!doc) throw new RpcNotFoundException();
+				return doc;
+			}),
 		);
 	}
 
@@ -73,8 +79,8 @@ export class CompanyService {
 		);
 	}
 
-	delete(findCompanyByIdDTO: FindCompanyByIdDTO): Observable<object> {
-		const {id} = findCompanyByIdDTO;
+	delete(deleteCompanyDTO: DeleteCompanyDTO): Observable<object> {
+		const {id} = deleteCompanyDTO;
 
 		const updateParent$ = this.model
 			.updateMany(

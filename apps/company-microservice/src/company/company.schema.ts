@@ -3,6 +3,7 @@ import {
 	FlattenMaps,
 	HydratedDocument,
 	Schema as MongooseSchema,
+	Types,
 } from 'mongoose';
 import {mongooseLeanVirtuals} from 'mongoose-lean-virtuals';
 
@@ -11,36 +12,41 @@ export type CompanyPOJO = FlattenMaps<Company>;
 
 @Schema({
 	versionKey: false,
-	id: true,
-	toJSON: {
-		virtuals: true,
-	},
-	toObject: {
-		virtuals: true,
-	},
 })
 export class Company {
-	id: string;
+	id: Types.ObjectId;
 
 	@Prop({required: true})
 	name: string;
 
 	@Prop({type: MongooseSchema.Types.ObjectId, ref: 'Company'})
 	parent: Company;
+
+	children?: Company[];
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
 
 CompanySchema.plugin(mongooseLeanVirtuals);
 
+CompanySchema.virtual('id').get(function () {
+	return this._id;
+});
+
 CompanySchema.set('toJSON', {
+	virtuals: true,
+	getters: true,
 	transform: function (doc, ret) {
+		ret.id = ret._id;
 		delete ret._id;
 	},
 });
 
 CompanySchema.set('toObject', {
+	virtuals: true,
+	getters: true,
 	transform: function (doc, ret) {
+		ret.id = ret._id;
 		delete ret._id;
 	},
 });

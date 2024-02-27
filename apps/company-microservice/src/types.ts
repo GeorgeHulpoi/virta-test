@@ -11,8 +11,10 @@ export interface Company {
 	id: string;
 	name: string;
 	parent?: string;
+	children?: Company[];
 }
 
 export type CreateCompany = Omit<Company, 'id'>;
-export type FindCompanyById = Pick<Company, 'id'>;
+export type FindCompanyById = Pick<Company, 'id'> & {includeChildren?: boolean};
 export type UpdateCompany = FindCompanyById & Partial<CreateCompany>;
+export type DeleteCompany = Pick<Company, 'id'>;
