@@ -23,10 +23,6 @@ export class CompanyService {
 		private readonly repository: CompanyRepository,
 	) {}
 
-	getModel(): Model<CompanyDocument> {
-		return this.model;
-	}
-
 	findById(findCompanyByIdDTO: FindCompanyByIdDTO): Observable<CompanyPOJO> {
 		const {id, includeChildren} = findCompanyByIdDTO;
 		let doc$: Promise<CompanyPOJO | null>;
@@ -45,9 +41,8 @@ export class CompanyService {
 		);
 	}
 
-	create(createCompanyDto: CreateCompanyDTO): Observable<CompanyPOJO> {
-		const company = new this.model(createCompanyDto);
-		return from(company.save().catch(this.catchError.bind(this)));
+	create(createCompanyDTO: CreateCompanyDTO): Observable<CompanyPOJO> {
+		return from(this.repository.create(createCompanyDTO));
 	}
 
 	update(

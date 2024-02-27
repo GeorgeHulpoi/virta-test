@@ -4,7 +4,7 @@ import {MongoMemoryServer} from 'mongodb-memory-server';
 import mongoose, {Model, Types} from 'mongoose';
 
 import {CompanyRepository} from './company.repository';
-import {Company, CompanySchema} from './company.schema';
+import {Company, CompanyPOJO, CompanySchema} from './company.schema';
 
 describe('CompanyRepository', () => {
 	let mongod: MongoMemoryServer;
@@ -220,6 +220,33 @@ describe('CompanyRepository', () => {
 			);
 
 			expect(doc).toBeNull();
+		});
+	});
+
+	describe('create', () => {
+		let result: CompanyPOJO;
+
+		beforeEach(async () => {
+			result = await repository.create({
+				name: 'Apple',
+			});
+		});
+
+		it('should return the created company', () => {
+			expect(result).toBeDefined();
+			expect(result.id).toBeDefined();
+			expect((result as any)._id).toBeUndefined();
+		});
+
+		it('should create in database', async () => {
+			const doc = await model.findById(result.id).lean().exec();
+
+			expect(doc).toBeDefined();
+			expect(doc).toEqual(
+				expect.objectContaining({
+					name: 'Apple',
+				}),
+			);
 		});
 	});
 });

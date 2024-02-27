@@ -4,6 +4,7 @@ import {Model, Types} from 'mongoose';
 
 import {Company, CompanyDocument, CompanyPOJO} from './company.schema';
 import {RpcInternalException} from '../../../../src/shared/exceptions/internal.exception';
+import {CreateCompanyDTO} from './dtos/create-company.dto';
 
 @Injectable()
 export class CompanyRepository {
@@ -60,6 +61,14 @@ export class CompanyRepository {
 				doc.children = doc.children.map(this.virtualizeDoc);
 				return doc;
 			});
+	}
+
+	create(createCompanyDTO: CreateCompanyDTO): Promise<CompanyPOJO> {
+		const company = new this.model(createCompanyDTO);
+		return company
+			.save()
+			.catch(this.catchError.bind(this))
+			.then((doc) => doc.toObject());
 	}
 
 	virtualizeDoc(doc: CompanyDocument): CompanyDocument {
