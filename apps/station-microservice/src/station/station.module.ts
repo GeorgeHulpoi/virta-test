@@ -5,6 +5,7 @@ import {StationController} from './station.controller';
 import {Station, StationSchema} from './station.schema';
 import {StationService} from './station.service';
 import {IsCompanyConstraint} from './validators/company.validator';
+import {StationRepository} from './station.repository';
 
 export interface StationModuleConfig {
 	imports?: ModuleMetadata['imports'];
@@ -25,6 +26,7 @@ export class StationModule {
 			controllers: [StationController],
 			providers: [
 				...(config?.providers || []),
+				StationRepository,
 				StationService,
 				IsCompanyConstraint,
 			],

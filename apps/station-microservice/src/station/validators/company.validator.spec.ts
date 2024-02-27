@@ -1,7 +1,7 @@
 import type {ClientGrpc} from '@nestjs/microservices';
 
 import {RpcInternalException} from '../../../../../src/shared/exceptions/internal.exception';
-import {companyPackageMock} from './company-package.mock';
+import {companyPackageMock} from '../../../test/mocks/company-package.mock';
 import {IsCompanyConstraint} from './company.validator';
 
 describe('IsCompanyConstraint', () => {

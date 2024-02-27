@@ -13,7 +13,7 @@ import {validationOptions} from '../src/options/validation.options';
 import {StationModule} from '../src/station/station.module';
 import {Station} from '../src/station/station.schema';
 import type {Station as StationResponse, StationService} from '../src/types';
-import {companyPackageMock} from '../src/station/validators/company-package.mock';
+import {companyPackageMock} from './mocks/company-package.mock';
 import {shouldBeRpcNotFoundException} from '../../../src/tests/asserts/shouldBeRpcNotFoundException';
 
 describe('Station Microservice (integration)', () => {
@@ -77,6 +77,189 @@ describe('Station Microservice (integration)', () => {
 
 	it('should boot', () => {
 		expect(stationService).toBeDefined();
+	});
+
+	describe('Near', () => {
+		beforeEach(async () => {
+			await firstValueFrom(
+				stationService.Create({
+					name: 'Skype Station 1',
+					latitude: 47.15350910849877,
+					longitude: 27.587230065475627,
+					company: '65ddcccd1ca0b6edee493949',
+					address: 'Center',
+				}),
+			);
+
+			await firstValueFrom(
+				stationService.Create({
+					name: 'Tesla Station 1',
+					latitude: 47.15350910849877,
+					longitude: 27.587230065475627,
+					company: '65db2c9e9cc5e873cdd4b9dd',
+					address: 'Center',
+				}),
+			);
+
+			await firstValueFrom(
+				stationService.Create({
+					name: 'Microsoft Station 1',
+					latitude: 47.15350910849877,
+					longitude: 27.587230065475627,
+					company: '65ddccaa9fbd546a7fbe154a',
+					address: 'Center',
+				}),
+			);
+
+			await firstValueFrom(
+				stationService.Create({
+					name: 'Microsoft Station 2',
+					latitude: 47.17323487126828,
+					longitude: 27.533158557705583,
+					company: '65ddccaa9fbd546a7fbe154a',
+					address: 'Parcurari',
+				}),
+			);
+		});
+
+		it('should return all stations grouped', async () => {
+			const {data: stations} = await firstValueFrom(
+				stationService.Near({
+					latitude: 47.15621756421411,
+					longitude: 27.587599164378734,
+					radius: 10,
+				}),
+			);
+
+			expect(stations).toBeDefined();
+			expect(Array.isArray(stations)).toBe(true);
+			expect(stations).toHaveLength(2);
+
+			expect(stations[0]).toEqual(
+				expect.objectContaining({
+					latitude: 47.15350910849877,
+					longitude: 27.587230065475627,
+					items: expect.anything(),
+				}),
+			);
+
+			expect(stations[0].items).toContainEqual({
+				id: expect.anything(),
+				name: 'Skype Station 1',
+				company: '65ddcccd1ca0b6edee493949',
+				address: 'Center',
+			});
+
+			expect(stations[0].items).toContainEqual({
+				id: expect.anything(),
+				name: 'Tesla Station 1',
+				company: '65db2c9e9cc5e873cdd4b9dd',
+				address: 'Center',
+			});
+
+			expect(stations[0].items).toContainEqual({
+				id: expect.anything(),
+				name: 'Microsoft Station 1',
+				company: '65ddccaa9fbd546a7fbe154a',
+				address: 'Center',
+			});
+
+			expect(stations[1]).toEqual(
+				expect.objectContaining({
+					latitude: 47.17323487126828,
+					longitude: 27.533158557705583,
+					items: expect.anything(),
+				}),
+			);
+
+			expect(stations[1].items).toContainEqual({
+				id: expect.anything(),
+				name: 'Microsoft Station 2',
+				company: '65ddccaa9fbd546a7fbe154a',
+				address: 'Parcurari',
+			});
+		});
+
+		it('should return company stations grouped', async () => {
+			const {data: stations} = await firstValueFrom(
+				stationService.Near({
+					latitude: 47.15621756421411,
+					longitude: 27.587599164378734,
+					radius: 10,
+					company: '65ddccaa9fbd546a7fbe154a',
+				}),
+			);
+
+			expect(stations).toBeDefined();
+			expect(Array.isArray(stations)).toBe(true);
+			expect(stations).toHaveLength(2);
+
+			expect(stations[0]).toEqual(
+				expect.objectContaining({
+					latitude: 47.15350910849877,
+					longitude: 27.587230065475627,
+					items: expect.anything(),
+				}),
+			);
+
+			expect(stations[0].items).toHaveLength(2);
+			expect(stations[0].items).toContainEqual({
+				id: expect.anything(),
+				name: 'Microsoft Station 1',
+				company: '65ddccaa9fbd546a7fbe154a',
+				address: 'Center',
+			});
+
+			expect(stations[0].items).toContainEqual({
+				id: expect.anything(),
+				name: 'Skype Station 1',
+				company: '65ddcccd1ca0b6edee493949',
+				address: 'Center',
+			});
+
+			expect(stations[1]).toEqual(
+				expect.objectContaining({
+					latitude: 47.17323487126828,
+					longitude: 27.533158557705583,
+					items: expect.anything(),
+				}),
+			);
+
+			expect(stations[1].items).toHaveLength(1);
+			expect(stations[1].items).toContainEqual({
+				id: expect.anything(),
+				name: 'Microsoft Station 2',
+				company: '65ddccaa9fbd546a7fbe154a',
+				address: 'Parcurari',
+			});
+		});
+
+		describe('should return undefined', () => {
+			it('when no stations is in radius', async () => {
+				const {data: stations} = await firstValueFrom(
+					stationService.Near({
+						latitude: 25,
+						longitude: 25,
+						radius: 10,
+					}),
+				);
+
+				expect(stations).toBeUndefined();
+			});
+
+			it("when company doesn't have any station in radius", async () => {
+				const {data: stations} = await firstValueFrom(
+					stationService.Near({
+						latitude: 47.15621756421411,
+						longitude: 27.587599164378734,
+						radius: 10,
+						company: '65db10f06548ed49254454a0',
+					}),
+				);
+
+				expect(stations).toBeUndefined();
+			});
+		});
 	});
 
 	describe('Create', () => {

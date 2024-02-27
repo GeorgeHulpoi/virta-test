@@ -5,6 +5,7 @@ import "google/protobuf/empty.proto";
 package station;
 
 service StationService {
+    rpc Near (NearStations) returns (NearStationsResult) {}
     rpc Create (CreateStation) returns (Station) {}
     rpc Update (UpdateStation) returns (Station) {}
     rpc Delete (FindStationById) returns (google.protobuf.Empty) {}
@@ -38,4 +39,29 @@ message UpdateStation {
 
 message FindStationById {
     string id = 1;
+}
+
+message NearStations {
+    double latitude = 1;
+	double longitude = 2;
+	double radius = 3;
+    optional string company = 4;
+}
+
+message NearStationsResult {
+    message ResultItem {
+        message Item {
+            string id = 1;
+            string name = 2;
+            string company = 3;
+            string address = 4;
+        }
+    
+        double latitude = 1;
+        double longitude = 2;
+        double distance = 3;
+        repeated Item items = 4;
+    }
+
+    repeated ResultItem data = 1;
 }
