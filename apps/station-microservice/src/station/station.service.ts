@@ -88,8 +88,7 @@ export class StationService implements OnModuleInit {
 	}
 
 	create(createStationDTO: CreateStationDTO): Observable<StationPOJO> {
-		const station = new this.model(createStationDTO);
-		return from(station.save().catch(this.catchError.bind(this)));
+		return from(this.repository.create(createStationDTO));
 	}
 
 	update(

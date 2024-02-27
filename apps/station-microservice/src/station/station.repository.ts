@@ -5,6 +5,7 @@ import {Model, Types} from 'mongoose';
 import {RpcInternalException} from '../../../../src/shared/exceptions/internal.exception';
 import {NearStationsResultItem} from '../types';
 import {Station, StationDocument, StationPOJO} from './station.schema';
+import {CreateStationDTO} from './dtos/create-station.dto';
 
 export interface GetStationsNearArgs {
 	longitude: number;
@@ -107,6 +108,20 @@ export class StationRepository {
 				}),
 			)
 			.catch(this.catchError.bind(this));
+	}
+
+	create(createStationDTO: CreateStationDTO): Promise<StationPOJO> {
+		const data: any = {
+			...createStationDTO,
+			company: Types.ObjectId.createFromHexString(
+				createStationDTO.company,
+			),
+		};
+		const station = new this.model(data);
+		return station
+			.save()
+			.catch(this.catchError.bind(this))
+			.then((doc) => doc.toObject());
 	}
 
 	mapStationInNearResult(doc) {

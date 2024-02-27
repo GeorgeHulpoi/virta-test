@@ -4,7 +4,7 @@ import {MongoMemoryServer} from 'mongodb-memory-server';
 import mongoose, {Model, Types} from 'mongoose';
 
 import {StationRepository} from './station.repository';
-import {Station, StationSchema} from './station.schema';
+import {Station, StationPOJO, StationSchema} from './station.schema';
 
 describe('StationRepository', () => {
 	let mongod: MongoMemoryServer;
@@ -281,6 +281,52 @@ describe('StationRepository', () => {
 			expect(stations).toBeDefined();
 			expect(Array.isArray(stations)).toBe(true);
 			expect(stations).toHaveLength(0);
+		});
+	});
+
+	describe('create', () => {
+		let result: StationPOJO;
+		const companyId = new Types.ObjectId();
+
+		beforeEach(async () => {
+			result = await repository.create({
+				name: 'Tesla Station 1',
+				longitude: 25,
+				latitude: 47,
+				company: companyId.toString(),
+				address: 'Center',
+			});
+		});
+
+		it('should return the created company', () => {
+			expect(result).toBeDefined();
+			expect(result.id).toBeDefined();
+			expect((result as any)._id).toBeUndefined();
+			expect(result).toEqual(
+				expect.objectContaining({
+					name: 'Tesla Station 1',
+					longitude: 25,
+					latitude: 47,
+					company: companyId,
+				}),
+			);
+		});
+
+		it('should create in database', async () => {
+			const doc = await model.findById(result.id).lean().exec();
+
+			expect(doc).toBeDefined();
+			expect(doc).toEqual(
+				expect.objectContaining({
+					name: 'Tesla Station 1',
+					company: companyId,
+					address: 'Center',
+					location: {
+						type: 'Point',
+						coordinates: [25, 47],
+					},
+				}),
+			);
 		});
 	});
 });

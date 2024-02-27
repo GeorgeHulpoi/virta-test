@@ -99,7 +99,7 @@ describe('Company Microservice (integration)', () => {
 
 			expect(data).toContainEqual({
 				id: microsoft.id,
-				name: 'Microsoft'
+				name: 'Microsoft',
 			});
 
 			expect(data).toContainEqual({
