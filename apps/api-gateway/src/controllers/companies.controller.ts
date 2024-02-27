@@ -43,7 +43,7 @@ export class CompaniesController {
 	@ApiResponse({status: 500, description: 'Internal Server Error.'})
 	create(@Body() createCompanyDTO: CreateCompanyDTO): Observable<CompanyDTO> {
 		return this.companyService
-			.create(createCompanyDTO)
+			.Create(createCompanyDTO)
 			.pipe(catchError(catchRpcException));
 	}
 
@@ -68,7 +68,7 @@ export class CompaniesController {
 		@Body() updateCompanyDTO: UpdateCompanyDTO,
 	): Observable<CompanyDTO> {
 		return this.companyService
-			.update({id, ...updateCompanyDTO})
+			.Update({id, ...updateCompanyDTO})
 			.pipe(catchError(catchRpcException));
 	}
 
@@ -85,7 +85,7 @@ export class CompaniesController {
 	@ApiResponse({status: 500, description: 'Internal Server Error.'})
 	delete(@Param('id') id: string): Observable<object> {
 		return this.companyService
-			.delete({id})
+			.Delete({id})
 			.pipe(catchError(catchRpcException));
 	}
 }
