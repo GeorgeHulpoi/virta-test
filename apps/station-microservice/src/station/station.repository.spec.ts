@@ -298,7 +298,7 @@ describe('StationRepository', () => {
 			});
 		});
 
-		it('should return the created company', () => {
+		it('should return the created station', () => {
 			expect(result).toBeDefined();
 			expect(result.id).toBeDefined();
 			expect((result as any)._id).toBeUndefined();
@@ -327,6 +327,63 @@ describe('StationRepository', () => {
 					},
 				}),
 			);
+		});
+	});
+
+	describe('findByIdAndUpdate', () => {
+		let station: StationPOJO;
+
+		beforeEach(async () => {
+			station = await repository.create({
+				name: 'Tesla Station 1',
+				longitude: 25,
+				latitude: 47,
+				company: new Types.ObjectId().toString(),
+				address: 'Center',
+			});
+		});
+
+		describe('should update', () => {
+			let newCompany;
+			let result: StationPOJO;
+
+			beforeEach(async () => {
+				newCompany = new Types.ObjectId();
+				result = await repository.findByIdAndUpdate(station.id, {
+					name: 'Virta Station 1',
+					latitude: 40,
+					company: newCompany.toString(),
+				});
+			});
+
+			it('and return updated doc', () => {
+				expect(result).toEqual(
+					expect.objectContaining({
+						name: 'Virta Station 1',
+						longitude: 25,
+						latitude: 40,
+						company: newCompany,
+						address: 'Center',
+					}),
+				);
+			});
+
+			it('and update in database', async () => {
+				const doc = await model.findById(station.id).lean().exec();
+
+				expect(doc).toBeDefined();
+				expect(doc).toEqual(
+					expect.objectContaining({
+						name: 'Virta Station 1',
+						location: {
+							type: 'Point',
+							coordinates: [25, 40],
+						},
+						company: newCompany,
+						address: 'Center',
+					}),
+				);
+			});
 		});
 	});
 });

@@ -100,21 +100,12 @@ export class StationService implements OnModuleInit {
 			throw new RpcBadRequestException();
 		}
 
-		return from(this.model.findById(id).exec()).pipe(
-			switchMap((doc) => {
+		return from(
+			this.repository.findByIdAndUpdate(id, restOfDTO).then((doc) => {
 				if (!doc) {
-					return throwError(() => new RpcNotFoundException());
+					throw new RpcNotFoundException();
 				}
-
-				for (const key in restOfDTO) {
-					doc[key] = restOfDTO[key];
-
-					if (key === 'latitude' || key === 'longitude') {
-						doc.markModified('location');
-					}
-				}
-
-				return from(doc.save());
+				return doc;
 			}),
 		);
 	}

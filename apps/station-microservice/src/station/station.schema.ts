@@ -1,9 +1,5 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {
-	FlattenMaps,
-	HydratedDocument,
-	Schema as MongooseSchema,
-} from 'mongoose';
+import {FlattenMaps, HydratedDocument, Types} from 'mongoose';
 import {mongooseLeanVirtuals} from 'mongoose-lean-virtuals';
 
 export type StationDocument = HydratedDocument<Station>;
@@ -35,7 +31,7 @@ export class Station {
 	location: Location;
 
 	@Prop({required: true})
-	company: MongooseSchema.Types.ObjectId;
+	company: Types.ObjectId;
 
 	@Prop({required: true})
 	address: string;

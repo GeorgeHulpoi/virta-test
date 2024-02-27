@@ -124,6 +124,29 @@ export class StationRepository {
 			.then((doc) => doc.toObject());
 	}
 
+	async findByIdAndUpdate(
+		id: string,
+		data: Partial<CreateStationDTO>,
+	): Promise<StationPOJO> {
+		const doc = await this.model.findById(id).exec();
+
+		if (!doc) {
+			return null;
+		}
+
+		for (const key in data) {
+			doc[key] = data[key];
+
+			if (key === 'latitude' || key === 'longitude') {
+				doc.markModified('location');
+			} else if (key === 'company') {
+				doc.company = Types.ObjectId.createFromHexString(data.company!);
+			}
+		}
+
+		return doc.save().then((doc) => doc.toObject());
+	}
+
 	mapStationInNearResult(doc) {
 		doc.id = doc._id;
 		delete doc._id;
