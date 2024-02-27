@@ -147,6 +147,13 @@ export class StationRepository {
 		return doc.save().then((doc) => doc.toObject());
 	}
 
+	findByIdAndDelete(id: string) {
+		return this.model
+			.findByIdAndDelete(id)
+			.exec()
+			.catch(this.catchError.bind(this));
+	}
+
 	mapStationInNearResult(doc) {
 		doc.id = doc._id;
 		delete doc._id;

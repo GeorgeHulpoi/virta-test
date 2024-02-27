@@ -386,4 +386,24 @@ describe('StationRepository', () => {
 			});
 		});
 	});
+
+	describe('findByIdAndDelete', () => {
+		let station: StationPOJO;
+
+		beforeEach(async () => {
+			station = await repository.create({
+				name: 'Tesla Station 1',
+				longitude: 25,
+				latitude: 47,
+				company: new Types.ObjectId().toString(),
+				address: 'Center',
+			});
+		});
+
+		it('should delete from database', async () => {
+			await repository.findByIdAndDelete(station.id);
+			const doc = await model.findById(station.id).lean().exec();
+			expect(doc).toBeNull();
+		});
+	});
 });

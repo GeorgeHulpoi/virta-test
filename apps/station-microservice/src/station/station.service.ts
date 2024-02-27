@@ -1,7 +1,6 @@
 import {Inject, Injectable, Logger, OnModuleInit} from '@nestjs/common';
 import {ClientGrpc} from '@nestjs/microservices';
-import {InjectModel} from '@nestjs/mongoose';
-import {Model, Types} from 'mongoose';
+import {Types} from 'mongoose';
 import {
 	Observable,
 	catchError,
@@ -21,7 +20,7 @@ import {FindStationByIdDTO} from './dtos/find-station-by-id.dto';
 import {NearStationsDTO} from './dtos/near-stations.dto';
 import {UpdateStationByIdDTO} from './dtos/update-company.dto';
 import {StationRepository} from './station.repository';
-import {Station, StationDocument, StationPOJO} from './station.schema';
+import {StationPOJO} from './station.schema';
 
 @Injectable()
 export class StationService implements OnModuleInit {
@@ -29,8 +28,6 @@ export class StationService implements OnModuleInit {
 	private companyService: CompanyService;
 
 	constructor(
-		@InjectModel(Station.name)
-		private readonly model: Model<StationDocument>,
 		@Inject('COMPANY_PACKAGE') private readonly client: ClientGrpc,
 		private readonly repository: StationRepository,
 	) {}
@@ -38,10 +35,6 @@ export class StationService implements OnModuleInit {
 	onModuleInit(): void {
 		this.companyService =
 			this.client.getService<CompanyService>('CompanyService');
-	}
-
-	getModel(): Model<StationDocument> {
-		return this.model;
 	}
 
 	near(nearStationsDTO: NearStationsDTO): Observable<any> {
@@ -114,14 +107,10 @@ export class StationService implements OnModuleInit {
 		const {id} = FindStationByIdDTO;
 
 		return from(
-			this.model
-				.findByIdAndDelete(id)
-				.exec()
-				.catch(this.catchError.bind(this))
-				.then((doc) => {
-					if (!doc) throw new RpcNotFoundException();
-					return {};
-				}),
+			this.repository.findByIdAndDelete(id).then((doc) => {
+				if (!doc) throw new RpcNotFoundException();
+				return {};
+			}),
 		);
 	}
 
@@ -134,10 +123,5 @@ export class StationService implements OnModuleInit {
 					...doc.children.map((child) => child.id),
 				]),
 			);
-	}
-
-	private catchError(err: Error) {
-		this.logger.error(err);
-		throw new RpcInternalException();
 	}
 }
