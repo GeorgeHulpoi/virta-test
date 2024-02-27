@@ -7,16 +7,22 @@ import {
 	Param,
 	Patch,
 	Post,
+	Get,
+	Query,
 } from '@nestjs/common';
 import {ClientGrpc} from '@nestjs/microservices';
 import {ApiResponse} from '@nestjs/swagger';
-import {Observable, catchError} from 'rxjs';
+import {Observable, catchError, map} from 'rxjs';
 
 import type {StationService} from '../../../station-microservice/src/types';
 import {catchRpcException} from '../catchRpcException';
 import {CreateStationDTO} from '../dtos/create-station.dto';
 import {StationDTO} from '../dtos/station.dto';
 import {UpdateStationDTO} from '../dtos/update-station.dto';
+import {
+	NearStationsDTO,
+	NearStationsResultDTO,
+} from '../dtos/near-stations.dto';
 
 @Controller('api/stations')
 export class StationsController {
@@ -27,6 +33,53 @@ export class StationsController {
 	onModuleInit() {
 		this.stationService =
 			this.client.getService<StationService>('StationService');
+	}
+
+	@Get('near')
+	@ApiResponse({
+		status: 200,
+		type: [NearStationsResultDTO],
+	})
+	@ApiResponse({status: 500, description: 'Internal Server Error.'})
+	near(@Query() query: NearStationsDTO): Observable<NearStationsResultDTO[]> {
+		return this.stationService.Near(query).pipe(
+			map((result) => result.data),
+			catchError(catchRpcException),
+		);
+	}
+
+	@Get()
+	@ApiResponse({
+		status: 200,
+		type: [StationDTO],
+	})
+	@ApiResponse({status: 500, description: 'Internal Server Error.'})
+	find(): Observable<StationDTO[]> {
+		return this.stationService.Find({}).pipe(
+			map((result) => result.data),
+			catchError(catchRpcException),
+		);
+	}
+
+	@Get(':id')
+	@HttpCode(200)
+	@ApiResponse({
+		status: 200,
+		type: StationDTO,
+	})
+	@ApiResponse({
+		status: 400,
+		description: "The given payload doesn't match the schema.",
+	})
+	@ApiResponse({
+		status: 404,
+		description: "The resource doesn't exists.",
+	})
+	@ApiResponse({status: 500, description: 'Internal Server Error.'})
+	findById(@Param('id') id: string): Observable<StationDTO> {
+		return this.stationService
+			.FindById({id})
+			.pipe(catchError(catchRpcException));
 	}
 
 	@Post()

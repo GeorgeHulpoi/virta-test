@@ -2,6 +2,7 @@ import {
 	Body,
 	Controller,
 	Delete,
+	Get,
 	HttpCode,
 	Inject,
 	Param,
@@ -10,7 +11,7 @@ import {
 } from '@nestjs/common';
 import {ClientGrpc} from '@nestjs/microservices';
 import {ApiResponse} from '@nestjs/swagger';
-import {Observable, catchError} from 'rxjs';
+import {Observable, catchError, map} from 'rxjs';
 
 import type {CompanyService} from '../../../company-microservice/src/types';
 import {catchRpcException} from '../catchRpcException';
@@ -27,6 +28,40 @@ export class CompaniesController {
 	onModuleInit() {
 		this.companyService =
 			this.client.getService<CompanyService>('CompanyService');
+	}
+
+	@Get()
+	@ApiResponse({
+		status: 200,
+		type: [CompanyDTO],
+	})
+	@ApiResponse({status: 500, description: 'Internal Server Error.'})
+	find(): Observable<CompanyDTO[]> {
+		return this.companyService.Find({}).pipe(
+			map((result) => result.data),
+			catchError(catchRpcException),
+		);
+	}
+
+	@Get(':id')
+	@HttpCode(200)
+	@ApiResponse({
+		status: 200,
+		type: CompanyDTO,
+	})
+	@ApiResponse({
+		status: 400,
+		description: "The given payload doesn't match the schema.",
+	})
+	@ApiResponse({
+		status: 404,
+		description: "The resource doesn't exists.",
+	})
+	@ApiResponse({status: 500, description: 'Internal Server Error.'})
+	findById(@Param('id') id: string): Observable<CompanyDTO> {
+		return this.companyService
+			.FindById({id})
+			.pipe(catchError(catchRpcException));
 	}
 
 	@Post()

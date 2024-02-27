@@ -24,5 +24,5 @@ export class NearStationsDTO {
 
 	@IsMongoId()
 	@IsOptional()
-	company: string;
+	company?: string;
 }
