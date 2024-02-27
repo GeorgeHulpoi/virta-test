@@ -21,6 +21,11 @@ export class StationController {
 		return this.stationService.near(nearStationsDTO);
 	}
 
+	@GrpcMethod('StationService', 'Find')
+	find(): Observable<{data: StationPOJO[]}> {
+		return this.stationService.find();
+	}
+
 	@GrpcMethod('StationService', 'FindById')
 	findById(findCompanyByIdDTO: FindStationByIdDTO): Observable<StationPOJO> {
 		return this.stationService.findById(findCompanyByIdDTO);

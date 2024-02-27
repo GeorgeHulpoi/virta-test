@@ -110,6 +110,21 @@ export class StationRepository {
 			.catch(this.catchError.bind(this));
 	}
 
+	find(): Promise<StationPOJO[]> {
+		return this.model
+			.find()
+			.lean({virtuals: true})
+			.exec()
+			.catch(this.catchError.bind(this))
+			.then((docs) =>
+				docs.map((doc) => {
+					doc.id = Types.ObjectId.createFromHexString(doc.id);
+					delete doc._id;
+					return doc;
+				}),
+			);
+	}
+
 	findById(id: string): Promise<StationPOJO | null> {
 		return this.model
 			.findById(id)

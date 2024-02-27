@@ -6,6 +6,7 @@ package station;
 
 service StationService {
     rpc Near (NearStations) returns (NearStationsResult) {}
+    rpc Find (google.protobuf.Empty) returns (StationList) {}
     rpc FindById (FindStationById) returns (Station) {}
     rpc Create (CreateStation) returns (Station) {}
     rpc Update (UpdateStation) returns (Station) {}
@@ -65,4 +66,8 @@ message NearStationsResult {
     }
 
     repeated ResultItem data = 1;
+}
+
+message StationList {
+	repeated Station data = 1;
 }

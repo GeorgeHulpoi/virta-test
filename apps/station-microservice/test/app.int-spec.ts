@@ -262,6 +262,57 @@ describe('Station Microservice (integration)', () => {
 		});
 	});
 
+	describe('Find', () => {
+		beforeEach(async () => {
+			await firstValueFrom(
+				stationService.Create({
+					name: 'Microsoft Station 1',
+					latitude: 47.15350910849877,
+					longitude: 27.587230065475627,
+					company: '65ddccaa9fbd546a7fbe154a',
+					address: 'Center',
+				}),
+			);
+
+			await firstValueFrom(
+				stationService.Create({
+					name: 'Microsoft Station 2',
+					latitude: 47.17323487126828,
+					longitude: 27.533158557705583,
+					company: '65ddccaa9fbd546a7fbe154a',
+					address: 'Parcurari',
+				}),
+			);
+		});
+
+		it('should return stations', async () => {
+			const {data} = await firstValueFrom(stationService.Find({}));
+
+			expect(data).toBeDefined();
+			expect(Array.isArray(data)).toBe(true);
+			expect(data).toContainEqual(
+				expect.objectContaining({
+					id: expect.any(String),
+					name: 'Microsoft Station 1',
+					latitude: 47.15350910849877,
+					longitude: 27.587230065475627,
+					company: '65ddccaa9fbd546a7fbe154a',
+					address: 'Center',
+				}),
+			);
+			expect(data).toContainEqual(
+				expect.objectContaining({
+					id: expect.any(String),
+					name: 'Microsoft Station 2',
+					latitude: 47.17323487126828,
+					longitude: 27.533158557705583,
+					company: '65ddccaa9fbd546a7fbe154a',
+					address: 'Parcurari',
+				}),
+			);
+		});
+	});
+
 	describe('FindById', () => {
 		let tesla: StationResponse;
 

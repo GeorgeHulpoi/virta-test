@@ -284,6 +284,52 @@ describe('StationRepository', () => {
 		});
 	});
 
+	describe('find', () => {
+		beforeEach(async () => {
+			await repository.create({
+				name: 'Tesla Station 1',
+				longitude: 25,
+				latitude: 47,
+				company: new Types.ObjectId().toString(),
+				address: 'Center',
+			});
+
+			await repository.create({
+				name: 'Virta Station 1',
+				longitude: 25,
+				latitude: 47,
+				company: new Types.ObjectId().toString(),
+				address: 'Center',
+			});
+		});
+
+		it('should return stations', async () => {
+			const stations = await repository.find();
+
+			expect(stations).toContainEqual(
+				expect.objectContaining({
+					id: expect.any(Types.ObjectId),
+					name: 'Tesla Station 1',
+					longitude: 25,
+					latitude: 47,
+					company: expect.any(Types.ObjectId),
+					address: 'Center',
+				}),
+			);
+
+			expect(stations).toContainEqual(
+				expect.objectContaining({
+					id: expect.any(Types.ObjectId),
+					name: 'Virta Station 1',
+					longitude: 25,
+					latitude: 47,
+					company: expect.any(Types.ObjectId),
+					address: 'Center',
+				}),
+			);
+		});
+	});
+
 	describe('findById', () => {
 		let virta: StationPOJO;
 

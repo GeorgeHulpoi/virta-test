@@ -80,6 +80,14 @@ export class StationService implements OnModuleInit {
 		);
 	}
 
+	find(): Observable<{data: StationPOJO[]}> {
+		return from(
+			this.repository.find().then((docs) => ({
+				data: docs,
+			})),
+		);
+	}
+
 	findById(findCompanyByIdDTO: FindStationByIdDTO): Observable<StationPOJO> {
 		const {id} = findCompanyByIdDTO;
 		return from(

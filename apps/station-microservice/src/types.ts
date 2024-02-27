@@ -2,6 +2,7 @@ import type {Observable} from 'rxjs';
 
 export interface StationService {
 	Near(payload: NearStations): Observable<NearStationsResult>;
+	Find(payload: object): Observable<StationList>;
 	FindById(payload: FindStationById): Observable<Station>;
 	Create(payload: CreateStation): Observable<Station>;
 	Update(payload: UpdateStation): Observable<Station>;
@@ -39,4 +40,8 @@ export interface NearStationsResultItem {
 
 export interface NearStationsResult {
 	data: NearStationsResultItem[];
+}
+
+export interface StationList {
+	data: Station[];
 }
