@@ -77,13 +77,13 @@ describe('Company Microservice (integration)', () => {
 
 		beforeEach(async () => {
 			microsoft = await firstValueFrom(
-				companyService.create({
+				companyService.Create({
 					name: 'Microsoft',
 				}),
 			);
 
 			azure = await firstValueFrom(
-				companyService.create({
+				companyService.Create({
 					name: 'Azure',
 					parent: microsoft.id,
 				}),
@@ -91,7 +91,7 @@ describe('Company Microservice (integration)', () => {
 		});
 
 		it('should return companies', async () => {
-			const {data} = await firstValueFrom(companyService.find({}));
+			const {data} = await firstValueFrom(companyService.Find({}));
 
 			expect(data).toBeDefined();
 			expect(Array.isArray(data)).toBe(true);
@@ -118,27 +118,27 @@ describe('Company Microservice (integration)', () => {
 
 		beforeEach(async () => {
 			microsoft = await firstValueFrom(
-				companyService.create({
+				companyService.Create({
 					name: 'Microsoft',
 				}),
 			);
 
 			azure = await firstValueFrom(
-				companyService.create({
+				companyService.Create({
 					name: 'Azure',
 					parent: microsoft.id,
 				}),
 			);
 
 			skype = await firstValueFrom(
-				companyService.create({
+				companyService.Create({
 					name: 'Skype',
 					parent: microsoft.id,
 				}),
 			);
 
 			skypeRomania = await firstValueFrom(
-				companyService.create({
+				companyService.Create({
 					name: 'Skype Romania S.R.L.',
 					parent: skype.id,
 				}),
@@ -147,7 +147,7 @@ describe('Company Microservice (integration)', () => {
 
 		it('should find', async () => {
 			const result = await firstValueFrom(
-				companyService.findById({id: microsoft.id}),
+				companyService.FindById({id: microsoft.id}),
 			);
 
 			expect(result).toBeDefined();
@@ -159,7 +159,7 @@ describe('Company Microservice (integration)', () => {
 
 		it('should find with children 1', async () => {
 			const result = await firstValueFrom(
-				companyService.findById({
+				companyService.FindById({
 					id: microsoft.id,
 					includeChildren: true,
 				}),
@@ -195,7 +195,7 @@ describe('Company Microservice (integration)', () => {
 
 		it('should find with children 2', async () => {
 			const result = await firstValueFrom(
-				companyService.findById({id: skype.id, includeChildren: true}),
+				companyService.FindById({id: skype.id, includeChildren: true}),
 			);
 
 			expect(result).toBeDefined();
@@ -218,7 +218,7 @@ describe('Company Microservice (integration)', () => {
 
 		it('should throw RpcNotFoundException when not exist', (done) => {
 			companyService
-				.findById({
+				.FindById({
 					id: '65d6579d8ac2b03dafa32f73',
 				})
 				.subscribe({
@@ -237,7 +237,7 @@ describe('Company Microservice (integration)', () => {
 		describe('should throw RpcBadRequestException', () => {
 			const createWrapper = (done, payload: any) => {
 				companyService
-					.create(payload)
+					.Create(payload)
 					.pipe(take(1))
 					.subscribe({
 						next: () => {
@@ -281,7 +281,7 @@ describe('Company Microservice (integration)', () => {
 
 			beforeEach(async () => {
 				company = await firstValueFrom(
-					companyService.create({
+					companyService.Create({
 						name: 'Apple',
 					}),
 				);
@@ -312,13 +312,13 @@ describe('Company Microservice (integration)', () => {
 
 			beforeEach(async () => {
 				parentCompany = await firstValueFrom(
-					companyService.create({
+					companyService.Create({
 						name: 'Microsoft',
 					}),
 				);
 
 				company = await firstValueFrom(
-					companyService.create({
+					companyService.Create({
 						name: 'Skype',
 						parent: parentCompany.id,
 					}),
@@ -355,7 +355,7 @@ describe('Company Microservice (integration)', () => {
 
 			const updateWrapper = (done, payload: any) => {
 				companyService
-					.update(payload)
+					.Update(payload)
 					.pipe(take(1))
 					.subscribe({
 						next: () => {
@@ -370,7 +370,7 @@ describe('Company Microservice (integration)', () => {
 
 			beforeEach(async () => {
 				company = await firstValueFrom(
-					companyService.create({
+					companyService.Create({
 						name: 'Apple',
 					}),
 				);
@@ -418,13 +418,13 @@ describe('Company Microservice (integration)', () => {
 
 			beforeEach(async () => {
 				company = await firstValueFrom(
-					companyService.create({
+					companyService.Create({
 						name: 'Apple',
 					}),
 				);
 
 				updatedCompany = await firstValueFrom(
-					companyService.update({
+					companyService.Update({
 						id: company.id,
 						name: 'Microsoft',
 					}),
@@ -457,19 +457,19 @@ describe('Company Microservice (integration)', () => {
 
 			beforeEach(async () => {
 				parentCompany = await firstValueFrom(
-					companyService.create({
+					companyService.Create({
 						name: 'Microsoft',
 					}),
 				);
 
 				company = await firstValueFrom(
-					companyService.create({
+					companyService.Create({
 						name: 'Skype',
 					}),
 				);
 
 				updatedCompany = await firstValueFrom(
-					companyService.update({
+					companyService.Update({
 						id: company.id,
 						parent: parentCompany.id,
 					}),
@@ -503,7 +503,7 @@ describe('Company Microservice (integration)', () => {
 	describe('Delete', () => {
 		it('should throw RpcNotFoundException when not exist', (done) => {
 			companyService
-				.delete({
+				.Delete({
 					id: '65d6579d8ac2b03dafa32f73',
 				})
 				.subscribe({
@@ -523,27 +523,27 @@ describe('Company Microservice (integration)', () => {
 
 			beforeEach(async () => {
 				microsoft = await firstValueFrom(
-					companyService.create({
+					companyService.Create({
 						name: 'Microsoft',
 					}),
 				);
 
 				await firstValueFrom(
-					companyService.create({
+					companyService.Create({
 						name: 'Skype',
 						parent: microsoft.id,
 					}),
 				);
 
 				await firstValueFrom(
-					companyService.create({
+					companyService.Create({
 						name: 'Azure',
 						parent: microsoft.id,
 					}),
 				);
 
 				deleteResponse = await firstValueFrom(
-					companyService.delete({
+					companyService.Delete({
 						id: microsoft.id,
 					}),
 				);
