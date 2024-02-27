@@ -284,6 +284,49 @@ describe('StationRepository', () => {
 		});
 	});
 
+	describe('findById', () => {
+		let virta: StationPOJO;
+
+		beforeEach(async () => {
+			await repository.create({
+				name: 'Tesla Station 1',
+				longitude: 25,
+				latitude: 47,
+				company: new Types.ObjectId().toString(),
+				address: 'Center',
+			});
+
+			virta = await repository.create({
+				name: 'Virta Station 1',
+				longitude: 25,
+				latitude: 47,
+				company: new Types.ObjectId().toString(),
+				address: 'Center',
+			});
+		});
+
+		it('should return doc', async () => {
+			const doc = await repository.findById(virta.id);
+
+			expect(doc).toBeDefined();
+			expect(doc).toEqual(
+				expect.objectContaining({
+					id: virta.id,
+					name: 'Virta Station 1',
+					longitude: 25,
+					latitude: 47,
+					company: expect.any(Types.ObjectId),
+					address: 'Center',
+				}),
+			);
+		});
+
+		it('should return null', async () => {
+			const doc = await repository.findById('65dceca410bafd358172baaa');
+			expect(doc).toBeNull();
+		});
+	});
+
 	describe('create', () => {
 		let result: StationPOJO;
 		const companyId = new Types.ObjectId();

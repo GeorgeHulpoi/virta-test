@@ -110,6 +110,21 @@ export class StationRepository {
 			.catch(this.catchError.bind(this));
 	}
 
+	findById(id: string): Promise<StationPOJO | null> {
+		return this.model
+			.findById(id)
+			.exec()
+			.catch(this.catchError.bind(this))
+			.then((doc) => {
+				if (doc) {
+					doc.id = Types.ObjectId.createFromHexString(doc.id);
+					delete doc._id;
+					return doc.toJSON();
+				}
+				return doc;
+			});
+	}
+
 	create(createStationDTO: CreateStationDTO): Promise<StationPOJO> {
 		const data: any = {
 			...createStationDTO,

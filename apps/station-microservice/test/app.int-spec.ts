@@ -262,6 +262,87 @@ describe('Station Microservice (integration)', () => {
 		});
 	});
 
+	describe('FindById', () => {
+		let tesla: StationResponse;
+
+		beforeEach(async () => {
+			await firstValueFrom(
+				stationService.Create({
+					name: 'Skype Station 1',
+					latitude: 47.15350910849877,
+					longitude: 27.587230065475627,
+					company: '65ddcccd1ca0b6edee493949',
+					address: 'Center',
+				}),
+			);
+
+			tesla = await firstValueFrom(
+				stationService.Create({
+					name: 'Tesla Station 1',
+					latitude: 47.15350910849877,
+					longitude: 27.587230065475627,
+					company: '65db2c9e9cc5e873cdd4b9dd',
+					address: 'Center',
+				}),
+			);
+
+			await firstValueFrom(
+				stationService.Create({
+					name: 'Microsoft Station 1',
+					latitude: 47.15350910849877,
+					longitude: 27.587230065475627,
+					company: '65ddccaa9fbd546a7fbe154a',
+					address: 'Center',
+				}),
+			);
+
+			await firstValueFrom(
+				stationService.Create({
+					name: 'Microsoft Station 2',
+					latitude: 47.17323487126828,
+					longitude: 27.533158557705583,
+					company: '65ddccaa9fbd546a7fbe154a',
+					address: 'Parcurari',
+				}),
+			);
+		});
+
+		it('should return the right station', async () => {
+			const result = await firstValueFrom(
+				stationService.FindById({id: tesla.id}),
+			);
+
+			expect(result).toBeDefined();
+			expect(result).toEqual(
+				expect.objectContaining({
+					id: tesla.id,
+					name: 'Tesla Station 1',
+					latitude: 47.15350910849877,
+					longitude: 27.587230065475627,
+					company: '65db2c9e9cc5e873cdd4b9dd',
+					address: 'Center',
+				}),
+			);
+		});
+
+		it('should throw RpcNotFoundException', (done) => {
+			stationService
+				.FindById({
+					id: '65db233c003af0f3d9c51692',
+				})
+				.pipe(take(1))
+				.subscribe({
+					next: () => {
+						done('should throw RpcNotFoundException');
+					},
+					error: (err) => {
+						shouldBeRpcNotFoundException(err);
+						done();
+					},
+				});
+		});
+	});
+
 	describe('Create', () => {
 		const defaultPayload = {
 			name: 'Apple Station',

@@ -80,6 +80,16 @@ export class StationService implements OnModuleInit {
 		);
 	}
 
+	findById(findCompanyByIdDTO: FindStationByIdDTO): Observable<StationPOJO> {
+		const {id} = findCompanyByIdDTO;
+		return from(
+			this.repository.findById(id).then((doc) => {
+				if (!doc) throw new RpcNotFoundException();
+				return doc;
+			}),
+		);
+	}
+
 	create(createStationDTO: CreateStationDTO): Observable<StationPOJO> {
 		return from(this.repository.create(createStationDTO));
 	}

@@ -2,6 +2,7 @@ import type {Observable} from 'rxjs';
 
 export interface StationService {
 	Near(payload: NearStations): Observable<NearStationsResult>;
+	FindById(payload: FindStationById): Observable<Station>;
 	Create(payload: CreateStation): Observable<Station>;
 	Update(payload: UpdateStation): Observable<Station>;
 	Delete(payload: FindStationById): Observable<object>;
