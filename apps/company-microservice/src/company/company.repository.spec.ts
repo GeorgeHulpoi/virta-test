@@ -280,4 +280,41 @@ describe('CompanyRepository', () => {
 			expect(result).toBeNull();
 		});
 	});
+
+	describe('findByIdAndDelete', () => {
+		it('should delete', async () => {
+			const company = await repository.create({
+				name: 'Apple',
+			});
+
+			await repository.findByIdAndDelete(company.id);
+
+			const doc = await model.findById(company.id).lean().exec();
+			expect(doc).toBeNull();
+		});
+	});
+
+	describe('unsetParentToAll', () => {
+		it('should update the parent to all companies', async () => {
+			const microsoft = await repository.create({
+				name: 'Microsoft',
+			});
+
+			await repository.create({
+				name: 'Azure',
+				parent: microsoft.id.toString(),
+			});
+
+			await repository.create({
+				name: 'Skype',
+				parent: microsoft.id.toString(),
+			});
+
+			await repository.unsetParentToAll(microsoft.id.toString());
+
+			const docs = await model.find({parent: microsoft.id}).lean().exec();
+			expect(docs).toBeDefined();
+			expect(docs).toHaveLength(0);
+		});
+	});
 });

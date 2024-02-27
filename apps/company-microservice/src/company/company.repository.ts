@@ -95,6 +95,29 @@ export class CompanyRepository {
 			});
 	}
 
+	findByIdAndDelete(id: string | Types.ObjectId): Promise<CompanyPOJO> {
+		return this.model
+			.findByIdAndDelete(id)
+			.exec()
+			.catch(this.catchError.bind(this));
+	}
+
+	unsetParentToAll(id: string) {
+		return this.model
+			.updateMany(
+				{
+					parent: Types.ObjectId.createFromHexString(id),
+				},
+				{
+					$unset: {
+						parent: '',
+					},
+				},
+			)
+			.exec()
+			.catch(this.catchError.bind(this));
+	}
+
 	virtualizeDoc(doc: CompanyDocument): CompanyDocument {
 		if (doc) {
 			doc.id = doc._id;
