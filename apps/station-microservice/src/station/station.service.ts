@@ -134,7 +134,7 @@ export class StationService implements OnModuleInit {
 
 	getCompanyAndChildrenIds(id: string): Observable<string[]> {
 		return this.companyService
-			.findById({id, includeChildren: true})
+			.FindById({id, includeChildren: true})
 			.pipe(
 				map((doc) => [
 					doc.id,

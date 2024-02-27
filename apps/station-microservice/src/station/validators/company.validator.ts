@@ -36,7 +36,7 @@ export class IsCompanyConstraint implements ValidatorConstraintInterface {
 			this.client.getService<CompanyService>('CompanyService');
 
 		return firstValueFrom(
-			companyService.findById({id}).pipe(
+			companyService.FindById({id}).pipe(
 				map(() => true),
 				catchError((err) => {
 					if ('details' in err) {
