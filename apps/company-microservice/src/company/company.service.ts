@@ -55,22 +55,10 @@ export class CompanyService {
 		}
 
 		return from(
-			this.model
-				.findByIdAndUpdate(
-					id,
-					{$set: restOfDTO},
-					{
-						returnDocument: 'after',
-						lean: {virtuals: true},
-					},
-				)
-				.exec()
-				.catch(this.catchError.bind(this))
-				.then((doc) => {
-					if (!doc) throw new RpcNotFoundException();
-					delete doc._id;
-					return doc;
-				}),
+			this.repository.findByIdAndUpdate(id, restOfDTO).then((doc) => {
+				if (!doc) throw new RpcNotFoundException();
+				return doc;
+			}),
 		);
 	}
 

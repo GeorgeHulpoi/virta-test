@@ -249,4 +249,35 @@ describe('CompanyRepository', () => {
 			);
 		});
 	});
+
+	describe('findByIdAndUpdate', () => {
+		let company: CompanyPOJO;
+
+		beforeEach(async () => {
+			company = await repository.create({
+				name: 'Apple',
+			});
+		});
+
+		it('should update', async () => {
+			const result = await repository.findByIdAndUpdate(company.id, {
+				name: 'Z (formerly Apple)',
+			});
+			expect(result).toBeDefined();
+			expect(result).toEqual(
+				expect.objectContaining({
+					id: company.id,
+					name: 'Z (formerly Apple)',
+				}),
+			);
+		});
+
+		it("should return null when doesn't exist", async () => {
+			const result = await repository.findByIdAndUpdate(
+				new Types.ObjectId(),
+				{name: 'Microsoft'},
+			);
+			expect(result).toBeNull();
+		});
+	});
 });

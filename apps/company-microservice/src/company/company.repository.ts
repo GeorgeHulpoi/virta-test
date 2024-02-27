@@ -71,6 +71,30 @@ export class CompanyRepository {
 			.then((doc) => doc.toObject());
 	}
 
+	findByIdAndUpdate(
+		id: string | Types.ObjectId,
+		data: Partial<CreateCompanyDTO>,
+	): Promise<CompanyPOJO | null> {
+		return this.model
+			.findByIdAndUpdate(
+				id,
+				{$set: data},
+				{
+					returnDocument: 'after',
+					lean: {virtuals: true},
+				},
+			)
+			.exec()
+			.catch(this.catchError.bind(this))
+			.then((doc) => {
+				if (doc) {
+					doc.id = Types.ObjectId.createFromHexString(doc.id);
+					delete doc._id;
+				}
+				return doc;
+			});
+	}
+
 	virtualizeDoc(doc: CompanyDocument): CompanyDocument {
 		if (doc) {
 			doc.id = doc._id;
